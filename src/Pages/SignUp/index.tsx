@@ -24,8 +24,8 @@ export const SignUp = () => {
   const disableButton =
     formValues.password !== "" &&
     formValues.password === formValues.password_repeat
-      ? false
-      : true;
+      ? 'false'
+      : 'true';
 
   const disabledButton = () => {
     if (
