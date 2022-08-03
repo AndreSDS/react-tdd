@@ -4,8 +4,6 @@ import './App.css'
 import { SignUp } from './Pages/SignUp'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div className="App">
       <SignUp />
