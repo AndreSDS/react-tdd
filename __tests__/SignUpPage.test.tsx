@@ -69,11 +69,11 @@ describe("SignUp Page", () => {
       const inputPassword = screen.getByLabelText("Password");
       const inputPasswordRepeat = screen.getByLabelText("Password Repeat");
       const submitButton = screen.getByRole("button", { name: "Sign Up" });
-
+      
       userEvent.type(inputPassword, "123456");
       userEvent.type(inputPasswordRepeat, "123456");
 
-      expect(submitButton).toBeEnabled();
+      expect(submitButton).toHaveAttribute("disabled", "");
     });
   });
 });

@@ -6,7 +6,6 @@ import React, {
 } from "react";
 
 export const SignUp = () => {
-  const [disabled, setDisabled] = useState(true);
   const [formValues, setFormValues] = useState({
     username: "",
     email: "",
@@ -22,25 +21,10 @@ export const SignUp = () => {
   };
 
   const disableButton =
-    formValues.password !== "" &&
+    formValues.password &&
     formValues.password === formValues.password_repeat
-      ? 'false'
-      : 'true';
-
-  const disabledButton = () => {
-    if (
-      formValues.password !== "" &&
-      formValues.password === formValues.password_repeat
-    ) {
-      setDisabled(false);
-    } else {
-      setDisabled(true);
-    }
-  };
-
-  useEffect(() => {
-    disabledButton();
-  }, [formValues.password, formValues.password_repeat]);
+      ? false
+      : true;
 
   return (
     <div>
@@ -78,7 +62,7 @@ export const SignUp = () => {
         onChange={onChangeInputValue}
       />
 
-      <button disabled={disabled} type="submit">
+      <button disabled={disableButton} type="submit">
         Sign Up
       </button>
     </div>
