@@ -1,10 +1,17 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUp } from "../src/Pages/SignUp";
+import { api } from "../src/service/api";
+
+jest.mock("../src/service/api");
 
 describe("SignUp Page", () => {
+  beforeEach(() => {
+    cleanup();
+  })
+
   let wrapperContainer: HTMLElement;
   beforeEach(() => {
     const { container } = render(<SignUp />);
@@ -69,11 +76,39 @@ describe("SignUp Page", () => {
       const inputPassword = screen.getByLabelText("Password");
       const inputPasswordRepeat = screen.getByLabelText("Password Repeat");
       const submitButton = screen.getByRole("button", { name: "Sign Up" });
-      
+
       userEvent.type(inputPassword, "123456");
       userEvent.type(inputPasswordRepeat, "123456");
 
       expect(submitButton).toHaveAttribute("disabled", "");
+    });
+  });
+
+  it("should sends username, email and password to backend when submit button is clicked", async () => {
+    const inputUserName = screen.getByLabelText("Username");
+    const inputEmail = screen.getByLabelText("E-mail");
+    const inputPassword = screen.getByLabelText("Password");
+    const inputPasswordRepeat = screen.getByLabelText("Password Repeat");
+    const submitButton = screen.getByRole("button", { name: "Sign Up" });
+
+    await userEvent.type(inputUserName, "test");
+    await userEvent.type(inputEmail, "test@gmail.com");
+    await userEvent.type(inputPassword, "123456");
+    await userEvent.type(inputPasswordRepeat, "123456");
+
+    const mockFn = jest.fn();
+    api.post = mockFn;
+
+    await userEvent.click(submitButton);
+
+    const firstCall = mockFn.mock.calls[0];
+
+    const body = firstCall[1];
+
+    expect(body).toEqual({
+      username: "test",
+      email: "test@gmail.com",
+      password: "123456",
     });
   });
 });

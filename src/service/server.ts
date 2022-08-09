@@ -1,29 +1,26 @@
 import { createServer, Model } from "miragejs";
+import { IUser } from "../interfaces/user";
 
 export function createMockServer() {
   return createServer({
     models: {
-      transaction: Model,
+      user: Model,
     },
 
     seeds(server) {
       server.db.loadData({
-        transactions: [
+        users: [
           {
             id: 1,
-            title: "Desenvolvimento de web site",
-            type: "deposit",
-            category: "Desenvolvimento",
-            amount: 12000,
-            createdAt: new Date("2021-07-14 09:00:00"),
+            username: "andré",
+            email: "rammpk@email.com",
+            password: "123456",
           },
           {
             id: 2,
-            title: "Aluguel",
-            type: "withdraw",
-            category: "Casa",
-            amount: 1000,
-            createdAt: new Date("2021-07-20 09:00:00"),
+            username: "bárbara",
+            email: "babi@email.com",
+            password: "123456",
           },
         ],
       });
@@ -32,14 +29,21 @@ export function createMockServer() {
     routes() {
       this.namespace = "api";
 
-      this.get("/transactions", () => {
-        return this.schema.all("transaction");
+      this.get("/users", () => {
+        const data = this.schema.all("user");
+        return data;
       });
 
-      this.post("/transactions", (schema, request) => {
+      this.get("/users/:username", (schema, request) => {
+        const data = schema.db.users.filter(
+          (user: IUser) => user.username === request.params.username
+        )[0];
+        return data;
+      });
+
+      this.post("/users", (schema, request) => {
         let data = JSON.parse(request.requestBody);
-        data = { ...data, createdAt: new Date() };
-        return schema.create("transaction", data);
+        return schema.create("user", data);
       });
     },
   });

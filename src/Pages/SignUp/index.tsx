@@ -4,8 +4,11 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { api } from "../../service/api";
 
 export const SignUp = () => {
+  const { getUser, getAllUsers, createUser } = useAuth();
   const [formValues, setFormValues] = useState({
     username: "",
     email: "",
@@ -16,15 +19,25 @@ export const SignUp = () => {
   const onChangeInputValue = (e: ChangeEvent<HTMLInputElement> | undefined) => {
     if (e) {
       const { value, name } = e.currentTarget;
+
       setFormValues({ ...formValues, [name]: value });
     }
   };
 
   const disableButton =
-    formValues.password &&
-    formValues.password === formValues.password_repeat
+    formValues.password && formValues.password === formValues.password_repeat
       ? false
       : true;
+
+  const onSubmit = async () => {
+    const body = {
+      username: formValues.username,
+      email: formValues.email,
+      password: formValues.password,
+    };
+
+    await api.post("/users", body);
+  };
 
   return (
     <div>
@@ -34,7 +47,7 @@ export const SignUp = () => {
       <input
         type="text"
         id="username"
-        name="usename"
+        name="username"
         onChange={onChangeInputValue}
       />
 
@@ -62,7 +75,7 @@ export const SignUp = () => {
         onChange={onChangeInputValue}
       />
 
-      <button disabled={disableButton} type="submit">
+      <button onClick={onSubmit} disabled={disableButton} type="submit">
         Sign Up
       </button>
     </div>
