@@ -43,7 +43,8 @@ export function createMockServer() {
 
       this.post("/users", (schema, request) => {
         let data = JSON.parse(request.requestBody);
-        return schema.create("user", data);
+        schema.db.users.insert(data);
+        return null;
       });
     },
   });
