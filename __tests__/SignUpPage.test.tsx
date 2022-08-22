@@ -1,6 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { cleanup, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUp } from "../src/Pages/SignUp";
 import { api } from "../src/service/api";
@@ -75,6 +81,23 @@ describe("SignUp Page", () => {
 
   describe("Behavior", () => {
     let submitButton: HTMLElement;
+    let counter = 0;
+    let mockReqBody: any;
+    const message = "Please check your email to activate your account";
+
+    beforeAll(() => {
+      api.post = jest
+        .fn()
+        .mockImplementation(async (url: string, body: any) => {
+          counter += 1;
+          mockReqBody = await body;
+          return Promise.resolve({ data: body });
+        });
+    });
+
+    beforeEach(() => {
+      counter = 0;
+    });
 
     const setup = async () => {
       const mockUserObject: IUser = {
@@ -104,30 +127,13 @@ describe("SignUp Page", () => {
     it("should sends username, email and password to backend when submit button is clicked", async () => {
       await setup();
 
-      let mockReqBody: any;
-
-      api.post = jest
-        .fn()
-        .mockImplementation(async (url: string, body: any) => {
-          mockReqBody = await body;
-          return Promise.resolve({ data: body });
-        });
-
       await userEvent.click(submitButton);
 
       expect(mockReqBody).toEqual(mockReqBody);
     });
 
     it("should disable the button when there is an ongoing request", async () => {
-      let counter = 0;
       await setup();
-
-      api.post = jest
-        .fn()
-        .mockImplementation(async (url: string, body: any) => {
-          counter += 1;
-          return Promise.resolve({ data: body });
-        });
 
       await userEvent.click(submitButton);
       await userEvent.click(submitButton);
@@ -138,17 +144,15 @@ describe("SignUp Page", () => {
     it("should display spinner when there is an ongoing request", async () => {
       await setup();
 
-      api.post = jest
-        .fn()
-        .mockImplementation(async (url: string, body: any) => {
-          return Promise.resolve({ data: body });
-        });
+      const spinner = screen.queryByRole("status");
+
+      expect(spinner).toBeNull();
 
       await userEvent.click(submitButton);
 
-      const spinner = screen.queryByRole("status");
+      // expect(spinner).toBeInTheDocument();
 
-      expect(spinner).toBeInTheDocument();
+      await screen.findByText(message);
     });
 
     it("should NOT display spinner when there is no ongoing request", async () => {
@@ -157,6 +161,52 @@ describe("SignUp Page", () => {
       expect(spinner).not.toBeInTheDocument();
     });
 
-    // 
+    it("should display account activation notification after successful sign up request", async () => {
+      await setup();
+
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
+      await userEvent.click(submitButton);
+      expect(screen.queryByText(message)).toBeInTheDocument();
+    });
+
+    it("should hide the form after successful sign up request", async () => {
+      await setup();
+
+      const form = screen.getByTestId("sign-up-form");
+
+      await userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(form).not.toBeInTheDocument();
+      });
+    });
+
+    // displays validation message for username
+    it("should display validation message for username", async () => {
+      const inputUserName = screen.getByLabelText("Username");
+      const inputEmail = screen.getByLabelText("E-mail");
+      const inputPassword = screen.getByLabelText("Password");
+      const inputPasswordRepeat = screen.getByLabelText("Password Repeat");
+      submitButton = screen.getByRole("button", { name: "Sign Up" });
+
+      await userEvent.clear(inputUserName);
+      await userEvent.type(inputEmail, "test");
+      await userEvent.type(inputPassword, "test");
+      await userEvent.type(inputPasswordRepeat, "test");
+
+      await waitFor(() => {
+        api.post = jest
+          .fn()
+          .mockImplementation(async (url: string, body: any) => {
+            return Promise.resolve({ data: body });
+          });
+      });
+
+      await userEvent.click(submitButton);
+      
+      const validationMessage = await screen.findByText("Username is required");
+
+      expect(validationMessage).toBeInTheDocument();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { createServer, Model } from "miragejs";
+import { createServer, Model, Response } from "miragejs";
 import { IUser } from "../interfaces/user";
 
 export function createMockServer() {
@@ -43,8 +43,23 @@ export function createMockServer() {
 
       this.post("/users", (schema, request) => {
         let data = JSON.parse(request.requestBody);
-        schema.db.users.insert(data);
-        return null;
+        const { username, email, password } = data;
+
+        if (username && email && password) {
+          return schema.db.users.insert(data);
+        } else {
+          return new Response(
+            400,
+            {},
+            {
+              errors: {
+                username: "Username is required",
+                email: "Email is required",
+                password: "Password is required",
+              },
+            }
+          );
+        }
       });
     },
   });
