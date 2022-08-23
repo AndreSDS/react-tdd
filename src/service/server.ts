@@ -44,7 +44,7 @@ export function createMockServer() {
       this.post("/users", (schema, request) => {
         let data = JSON.parse(request.requestBody);
         const { username, email, password } = data;
-
+        
         if (username && email && password) {
           return schema.db.users.insert(data);
         } else {
@@ -54,7 +54,7 @@ export function createMockServer() {
             {
               errors: {
                 username: "Username is required",
-                email: "Email is required",
+                email: "E-mail cannot be null",
                 password: "Password is required",
               },
             }

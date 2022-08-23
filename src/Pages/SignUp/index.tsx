@@ -4,12 +4,15 @@ import React, {
   FormEvent,
   MouseEventHandler,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
+import { Input } from "../../components/Input";
 
 export const SignUp = () => {
+  const formRef = useRef(null);
   const { getAllUsers } = useAuth();
   const [formValues, setFormValues] = useState({
     username: "",
@@ -17,10 +20,11 @@ export const SignUp = () => {
     password: "",
     password_repeat: "",
   });
+
   const [errors, setErrors] = useState({
-    username: "Username is required",
-    email: "Email is required",
-    password: "Password is required",
+    username: "",
+    email: "",
+    password: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -34,6 +38,24 @@ export const SignUp = () => {
     }
   };
 
+  const handleErros = (data: any) => {
+    for (const id in formValues) {
+      const propname = id as keyof typeof formValues;
+
+      if (!formValues[propname]) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [id]: data[id],
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [id]: "",
+        }));
+      }
+    }
+  };
+
   const disableButton =
     formValues.password && formValues.password === formValues.password_repeat
       ? false
@@ -41,6 +63,7 @@ export const SignUp = () => {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const body = {
       username: formValues.username,
       email: formValues.email,
@@ -51,11 +74,17 @@ export const SignUp = () => {
 
     try {
       await api.post("/users", body);
+
       setSignUpSuccess(true);
+      setErrors({
+        username: "",
+        email: "",
+        password: "",
+      });
     } catch (error) {
       const errors: any = error;
       if (errors.response.status === 400) {
-        setErrors({ ...errors.response.data.errors });
+        handleErros(errors.response.data.errors);
       }
       setLoading(false);
     }
@@ -73,57 +102,36 @@ export const SignUp = () => {
             <h1 className="font-bold text-xl mb-3">Sign Up</h1>
 
             <div className="mb-4">
-              <label htmlFor="username" className="label">
-                Username
-              </label>
-              <input
-                className="input"
-                type="text"
+              <Input
                 id="username"
-                name="username"
+                label="Username"
                 onChange={onChangeInputValue}
+                errorMessage={errors.username}
               />
-              <span className="error">{errors.username}</span>
 
-              <label htmlFor="email" className="label">
-                E-mail
-              </label>
-              <input
-                className="input"
+              <Input
                 type="email"
                 id="email"
-                name="email"
+                label="E-mail"
                 onChange={onChangeInputValue}
+                errorMessage={errors.email}
               />
-              <span className="error">{errors.email}</span>
 
-              <label htmlFor="password" className="label">
-                Password
-              </label>
-              <input
-                className="input"
+              <Input
                 type="password"
                 id="password"
-                name="password"
+                label="Password"
                 onChange={onChangeInputValue}
+                errorMessage={errors.password}
               />
-              {errors.password && (
-                <span className="error">{errors.password}</span>
-              )}
 
-              <label htmlFor="password_repeat" className="label">
-                Password Repeat
-              </label>
-              <input
-                className="input"
+              <Input
                 type="password"
                 id="password_repeat"
-                name="password_repeat"
+                label="Password Repeat"
                 onChange={onChangeInputValue}
+                errorMessage={errors.password}
               />
-              {errors.password && (
-                <span className="error">{errors.password}</span>
-              )}
 
               <button
                 className={

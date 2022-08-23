@@ -169,6 +169,25 @@ describe("SignUp Page", () => {
       expect(screen.queryByText(message)).toBeInTheDocument();
     });
 
+    it("should hide spinner and enable button after successful sign up request", async () => {
+      await setup();
+
+      const inputUserName = screen.getByLabelText("Username");
+
+      await userEvent.clear(inputUserName);
+
+      api.post = jest
+        .fn()
+        .mockImplementation(async (url: string, body: any) => {
+          return Promise.resolve({ data: body });
+        });
+
+      const spinner = screen.queryByRole("status");
+
+      expect(spinner).not.toBeInTheDocument();
+      expect(submitButton).toBeEnabled();
+    });
+
     it("should hide the form after successful sign up request", async () => {
       await setup();
 
@@ -181,30 +200,60 @@ describe("SignUp Page", () => {
       });
     });
 
-    // displays validation message for username
-    it("should display validation message for username", async () => {
+    it("should displays validation message for username", async () => {
+      await setup();
+
       const inputUserName = screen.getByLabelText("Username");
-      const inputEmail = screen.getByLabelText("E-mail");
-      const inputPassword = screen.getByLabelText("Password");
-      const inputPasswordRepeat = screen.getByLabelText("Password Repeat");
-      submitButton = screen.getByRole("button", { name: "Sign Up" });
-
       await userEvent.clear(inputUserName);
-      await userEvent.type(inputEmail, "test");
-      await userEvent.type(inputPassword, "test");
-      await userEvent.type(inputPasswordRepeat, "test");
 
-      await waitFor(() => {
-        api.post = jest
-          .fn()
-          .mockImplementation(async (url: string, body: any) => {
-            return Promise.resolve({ data: body });
+      api.post = jest
+        .fn()
+        .mockImplementation(async (url: string, body: any) => {
+          return Promise.reject({
+            response: {
+              status: 400,
+              data: {
+                errors: {
+                  username: "Username is required",
+                },
+              },
+            },
           });
-      });
+        });
 
       await userEvent.click(submitButton);
-      
+
       const validationMessage = await screen.findByText("Username is required");
+
+      expect(validationMessage).toBeInTheDocument();
+    });
+
+    it("should displays validation message for email", async () => {
+      await setup();
+
+      const inputEmail = screen.getByLabelText("E-mail");
+      await userEvent.clear(inputEmail);
+
+      api.post = jest
+        .fn()
+        .mockImplementation(async (url: string, body: any) => {
+          return Promise.reject({
+            response: {
+              status: 400,
+              data: {
+                errors: {
+                  email: "E-mail cannot be null",
+                },
+              },
+            },
+          });
+        });
+
+      await userEvent.click(submitButton);
+
+      const validationMessage = await screen.findByText(
+        "E-mail cannot be null"
+      );
 
       expect(validationMessage).toBeInTheDocument();
     });
