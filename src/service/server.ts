@@ -45,7 +45,7 @@ export function createMockServer() {
         let data = JSON.parse(request.requestBody);
         const { username, email, password } = data;
         
-        if (username && email && password) {
+        if (username && email && password && password.length > 5) {
           return schema.db.users.insert(data);
         } else {
           return new Response(
@@ -55,7 +55,7 @@ export function createMockServer() {
               errors: {
                 username: "Username is required",
                 email: "E-mail cannot be null",
-                password: "Password is required",
+                password: "Password must be at least 6 characters",
               },
             }
           );

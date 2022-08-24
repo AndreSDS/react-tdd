@@ -1,15 +1,13 @@
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  FormEvent,
-  MouseEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
 import { Input } from "../../components/Input";
+
+interface ErrorsProps {
+  errorUsername?: string;
+  errorEmail?: string;
+  errorPassword?: string;
+}
 
 export const SignUp = () => {
   const formRef = useRef(null);
@@ -21,11 +19,7 @@ export const SignUp = () => {
     password_repeat: "",
   });
 
-  const [errors, setErrors] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [errors, setErrors] = useState<ErrorsProps>({});
 
   const [loading, setLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
@@ -39,27 +33,25 @@ export const SignUp = () => {
   };
 
   const handleErros = (data: any) => {
+    const passwordMinLength = formValues.password.length < 6;
+    let errorFields = { ...errors };
+
     for (const id in formValues) {
       const propname = id as keyof typeof formValues;
 
       if (!formValues[propname]) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [id]: data[id],
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [id]: "",
-        }));
+        errorFields = { ...errorFields, [propname]: data[propname] };
       }
+
+      if (propname === "password" && passwordMinLength) {
+        errorFields = { ...errorFields, errorPassword: data[propname] };
+      }
+
+      setErrors(errorFields);
     }
   };
 
-  const disableButton =
-    formValues.password && formValues.password === formValues.password_repeat
-      ? false
-      : true;
+  const disableButton = formValues.password ? false : true;
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,14 +65,12 @@ export const SignUp = () => {
     setLoading(true);
 
     try {
-      await api.post("/users", body);
+      if (!passwordMissmatch) {
+        await api.post("/users", body);
 
-      setSignUpSuccess(true);
-      setErrors({
-        username: "",
-        email: "",
-        password: "",
-      });
+        setSignUpSuccess(true);
+        setErrors({});
+      }
     } catch (error) {
       const errors: any = error;
       if (errors.response.status === 400) {
@@ -89,6 +79,11 @@ export const SignUp = () => {
       setLoading(false);
     }
   };
+
+  const passwordMissmatch =
+    formValues.password !== formValues.password_repeat
+      ? "Password does not match"
+      : "";
 
   return (
     <>
@@ -106,7 +101,7 @@ export const SignUp = () => {
                 id="username"
                 label="Username"
                 onChange={onChangeInputValue}
-                errorMessage={errors.username}
+                errorMessage={errors.errorUsername}
               />
 
               <Input
@@ -114,7 +109,7 @@ export const SignUp = () => {
                 id="email"
                 label="E-mail"
                 onChange={onChangeInputValue}
-                errorMessage={errors.email}
+                errorMessage={errors.errorEmail}
               />
 
               <Input
@@ -122,7 +117,7 @@ export const SignUp = () => {
                 id="password"
                 label="Password"
                 onChange={onChangeInputValue}
-                errorMessage={errors.password}
+                errorMessage={errors.errorPassword}
               />
 
               <Input
@@ -130,7 +125,7 @@ export const SignUp = () => {
                 id="password_repeat"
                 label="Password Repeat"
                 onChange={onChangeInputValue}
-                errorMessage={errors.password}
+                errorMessage={passwordMissmatch}
               />
 
               <button

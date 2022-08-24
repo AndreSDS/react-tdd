@@ -200,62 +200,72 @@ describe("SignUp Page", () => {
       });
     });
 
-    it("should displays validation message for username", async () => {
-      await setup();
+    const generateValidationMessage = async (
+      field: string,
+      message: string
+    ) => {
+      const formatFieldName = field.toLowerCase().replace(/[^a-z]/g, "");
 
-      const inputUserName = screen.getByLabelText("Username");
-      await userEvent.clear(inputUserName);
-
-      api.post = jest
-        .fn()
-        .mockImplementation(async (url: string, body: any) => {
-          return Promise.reject({
-            response: {
-              status: 400,
-              data: {
-                errors: {
-                  username: "Username is required",
-                },
+      api.post = jest.fn().mockImplementation(async () => {
+        return Promise.reject({
+          response: {
+            status: 400,
+            data: {
+              errors: {
+                [formatFieldName]: message,
               },
             },
-          });
+          },
         });
+      });
+    };
+
+    it.each`
+      field         | message
+      ${"Username"} | ${"Username is required"}
+      ${"E-mail"}   | ${"E-mail cannot be null"}
+      ${"Password"} | ${"Password must be at least 6 characters"}
+    `("displays $message for $field", async ({ field, message }) => {
+      await setup();
+
+      const input = screen.getByLabelText(field);
+      await userEvent.clear(input);
+
+      await generateValidationMessage(field, message);
 
       await userEvent.click(submitButton);
 
-      const validationMessage = await screen.findByText("Username is required");
+      await waitFor(async () => {
+        const validationMessage = await screen.findByText(message);
+
+        expect(validationMessage).toBeInTheDocument();
+      }, { timeout: 4000 });
+    });
+
+    it("displays mismatch password message for password-repeat", async () => {
+      await setup();
+
+      const inputPassword = screen.getByLabelText("Password");
+      const inputPasswordRepeat = screen.getByLabelText("Password Repeat");
+
+      await userEvent.type(inputPassword, "123456");
+      await userEvent.type(inputPasswordRepeat, "123457");
+
+      const validationMessage = screen.getByText("Password does not match");
 
       expect(validationMessage).toBeInTheDocument();
     });
 
-    it("should displays validation message for email", async () => {
+    it("clears errors messages after username field is filled", async () => {
       await setup();
 
-      const inputEmail = screen.getByLabelText("E-mail");
-      await userEvent.clear(inputEmail);
-
-      api.post = jest
-        .fn()
-        .mockImplementation(async (url: string, body: any) => {
-          return Promise.reject({
-            response: {
-              status: 400,
-              data: {
-                errors: {
-                  email: "E-mail cannot be null",
-                },
-              },
-            },
-          });
-        });
+      await generateValidationMessage("username", "Username is required");
 
       await userEvent.click(submitButton);
 
-      const validationMessage = await screen.findByText(
-        "E-mail cannot be null"
-      );
+      const validationMessage = screen.queryByText("Username is required");
 
-      expect(validationMessage).toBeInTheDocument();
+      expect(validationMessage).not.toBeInTheDocument();
     });
   });
 });
