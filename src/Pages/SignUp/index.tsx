@@ -4,9 +4,9 @@ import { api } from "../../service/api";
 import { Input } from "../../components/Input";
 
 interface ErrorsProps {
-  errorUsername?: string;
-  errorEmail?: string;
-  errorPassword?: string;
+  username?: string;
+  email?: string;
+  password?: string;
 }
 
 export const SignUp = () => {
@@ -27,8 +27,12 @@ export const SignUp = () => {
   const onChangeInputValue = (e: ChangeEvent<HTMLInputElement> | undefined) => {
     if (e) {
       const { id, value } = e.currentTarget;
+      const newFormValues = { ...formValues, [id]: value };
+      const errorFields = { ...errors };
+      delete errorFields[id as keyof ErrorsProps];
 
-      setFormValues({ ...formValues, [id]: value });
+      setFormValues(newFormValues);
+      setErrors(errorFields);
     }
   };
 
@@ -39,12 +43,14 @@ export const SignUp = () => {
     for (const id in formValues) {
       const propname = id as keyof typeof formValues;
 
-      if (!formValues[propname]) {
+      if (formValues[propname]) {
+        delete errorFields[propname as keyof ErrorsProps];
+      } else {
         errorFields = { ...errorFields, [propname]: data[propname] };
       }
 
       if (propname === "password" && passwordMinLength) {
-        errorFields = { ...errorFields, errorPassword: data[propname] };
+        errorFields = { ...errorFields, password: data[propname] };
       }
 
       setErrors(errorFields);
@@ -101,7 +107,7 @@ export const SignUp = () => {
                 id="username"
                 label="Username"
                 onChange={onChangeInputValue}
-                errorMessage={errors.errorUsername}
+                errorMessage={errors.username}
               />
 
               <Input
@@ -109,7 +115,7 @@ export const SignUp = () => {
                 id="email"
                 label="E-mail"
                 onChange={onChangeInputValue}
-                errorMessage={errors.errorEmail}
+                errorMessage={errors.email}
               />
 
               <Input
@@ -117,7 +123,7 @@ export const SignUp = () => {
                 id="password"
                 label="Password"
                 onChange={onChangeInputValue}
-                errorMessage={errors.errorPassword}
+                errorMessage={errors.password}
               />
 
               <Input

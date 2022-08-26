@@ -235,11 +235,14 @@ describe("SignUp Page", () => {
 
       await userEvent.click(submitButton);
 
-      await waitFor(async () => {
-        const validationMessage = await screen.findByText(message);
+      waitFor(
+        async () => {
+          const validationMessage = await screen.findByText(message);
 
-        expect(validationMessage).toBeInTheDocument();
-      }, { timeout: 4000 });
+          expect(validationMessage).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it("displays mismatch password message for password-repeat", async () => {
@@ -256,16 +259,33 @@ describe("SignUp Page", () => {
       expect(validationMessage).toBeInTheDocument();
     });
 
-    it("clears errors messages after username field is filled", async () => {
-      await setup();
+    it.each`
+      field         | message
+      ${"Username"} | ${"Username is required"}
+      ${"E-mail"}   | ${"E-mail cannot be null"}
+      ${"Password"} | ${"Password must be at least 6 characters"}
+    `(
+      "clears errors messages after $field is filled",
+      async ({ field, message, label }) => {
+        const input = screen.getByLabelText(field);
+        let validationMessage: HTMLElement | null = null;
 
-      await generateValidationMessage("username", "Username is required");
+        await generateValidationMessage(field, message);
 
-      await userEvent.click(submitButton);
+        await userEvent.click(submitButton);
 
-      const validationMessage = screen.queryByText("Username is required");
+        waitFor(async () => {
+          validationMessage = await screen.findByText(message);
 
-      expect(validationMessage).not.toBeInTheDocument();
-    });
+          expect(validationMessage).toBeInTheDocument();
+        });
+
+        await userEvent.type(input, "123456");
+
+        validationMessage = screen.queryByText(message);
+
+        expect(validationMessage).not.toBeInTheDocument();
+      }
+    );
   });
 });
