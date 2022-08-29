@@ -1,7 +1,9 @@
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
 import { Input } from "../../components/Input";
+import { LanguageSelector } from "../../components/LanguageSelector";
 
 interface ErrorsProps {
   username?: string;
@@ -9,14 +11,13 @@ interface ErrorsProps {
   password?: string;
 }
 
-export const SignUp = () => {
-  const formRef = useRef(null);
-  const { getAllUsers } = useAuth();
+export const SignUpPage = (props: any) => {
+  const { t } = useTranslation();
   const [formValues, setFormValues] = useState({
     username: "",
     email: "",
     password: "",
-    password_repeat: "",
+    passwordRepeat: "",
   });
 
   const [errors, setErrors] = useState<ErrorsProps>({});
@@ -87,25 +88,25 @@ export const SignUp = () => {
   };
 
   const passwordMissmatch =
-    formValues.password !== formValues.password_repeat
+    formValues.password !== formValues.passwordRepeat
       ? "Password does not match"
       : "";
 
   return (
     <>
-      <div className="w-full max-w-lg mx-auto flex">
+      <div className="w-full max-w-lg mx-auto flex flex-col">
         {!signUpSuccess && (
           <form
             data-testid="sign-up-form"
             onSubmit={onSubmit}
             className="grow bg-white shadow-md rounded px-8 py-6"
           >
-            <h1 className="font-bold text-xl mb-3">Sign Up</h1>
+            <h1 className="font-bold text-xl mb-3">{t("signUp")}</h1>
 
             <div className="mb-4">
               <Input
                 id="username"
-                label="Username"
+                label={t("username")}
                 onChange={onChangeInputValue}
                 errorMessage={errors.username}
               />
@@ -113,7 +114,7 @@ export const SignUp = () => {
               <Input
                 type="email"
                 id="email"
-                label="E-mail"
+                label={t("email")}
                 onChange={onChangeInputValue}
                 errorMessage={errors.email}
               />
@@ -121,15 +122,15 @@ export const SignUp = () => {
               <Input
                 type="password"
                 id="password"
-                label="Password"
+                label={t("password")}
                 onChange={onChangeInputValue}
                 errorMessage={errors.password}
               />
 
               <Input
                 type="password"
-                id="password_repeat"
-                label="Password Repeat"
+                id="passwordRepeat"
+                label={t("passwordRepeat")}
                 onChange={onChangeInputValue}
                 errorMessage={passwordMissmatch}
               />
@@ -149,7 +150,7 @@ export const SignUp = () => {
                     className="w-6 h-6 border-4 border-dashed rounded-full animate-spin dark:border-zinc-100 mr-3"
                   ></div>
                 )}
-                Sign Up
+                {t("signUp")}
               </button>
             </div>
           </form>
@@ -163,6 +164,8 @@ export const SignUp = () => {
             Please check your email to activate your account
           </div>
         )}
+
+        <LanguageSelector />
       </div>
     </>
   );

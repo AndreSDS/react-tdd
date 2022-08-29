@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1661540829902" clover="3.2.0">
+  <project timestamp="1661540829902" name="All files">
+    <metrics statements="70" coveredstatements="53" conditionals="33" coveredconditionals="27" methods="10" coveredmethods="6" elements="113" coveredelements="86" complexity="0" loc="70" ncloc="70" packages="4" files="4" classes="4"/>
+    <package name="Pages.SignUp">
+      <metrics statements="46" coveredstatements="45" conditionals="24" coveredconditionals="23" methods="4" coveredmethods="4"/>
+      <file name="index.tsx" path="C:\Users\andre.souza\Documents\estudos\react-tdd\src\Pages\SignUp\index.tsx">
+        <metrics statements="46" coveredstatements="45" conditionals="24" coveredconditionals="23" methods="4" coveredmethods="4"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="403" type="stmt"/>
+        <line num="14" count="403" type="stmt"/>
+        <line num="15" count="403" type="stmt"/>
+        <line num="22" count="403" type="stmt"/>
+        <line num="24" count="403" type="stmt"/>
+        <line num="25" count="403" type="stmt"/>
+        <line num="27" count="403" type="stmt"/>
+        <line num="28" count="364" type="cond" truecount="1" falsecount="0"/>
+        <line num="29" count="364" type="stmt"/>
+        <line num="30" count="364" type="stmt"/>
+        <line num="31" count="364" type="stmt"/>
+        <line num="32" count="364" type="stmt"/>
+        <line num="34" count="364" type="stmt"/>
+        <line num="35" count="364" type="stmt"/>
+        <line num="39" count="403" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+        <line num="41" count="2" type="stmt"/>
+        <line num="43" count="2" type="stmt"/>
+        <line num="44" count="8" type="stmt"/>
+        <line num="46" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="47" count="6" type="stmt"/>
+        <line num="49" count="2" type="stmt"/>
+        <line num="52" count="8" type="cond" truecount="2" falsecount="1"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="56" count="8" type="stmt"/>
+        <line num="60" count="403" type="cond" truecount="2" falsecount="0"/>
+        <line num="62" count="403" type="stmt"/>
+        <line num="63" count="7" type="stmt"/>
+        <line num="65" count="7" type="stmt"/>
+        <line num="71" count="7" type="stmt"/>
+        <line num="73" count="7" type="stmt"/>
+        <line num="74" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="75" count="7" type="stmt"/>
+        <line num="77" count="5" type="stmt"/>
+        <line num="78" count="5" type="stmt"/>
+        <line num="81" count="2" type="stmt"/>
+        <line num="82" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="83" count="2" type="stmt"/>
+        <line num="85" count="2" type="stmt"/>
+        <line num="90" count="403" type="cond" truecount="2" falsecount="0"/>
+        <line num="94" count="403" type="stmt"/>
+      </file>
+    </package>
+    <package name="components">
+      <metrics statements="3" coveredstatements="3" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+      <file name="Input.tsx" path="C:\Users\andre.souza\Documents\estudos\react-tdd\src\components\Input.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="1595" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="1595" type="stmt"/>
+      </file>
+    </package>
+    <package name="hooks">
+      <metrics statements="19" coveredstatements="3" conditionals="5" coveredconditionals="0" methods="5" coveredmethods="1"/>
+      <file name="useAuth.ts" path="C:\Users\andre.souza\Documents\estudos\react-tdd\src\hooks\useAuth.ts">
+        <metrics statements="19" coveredstatements="3" conditionals="5" coveredconditionals="0" methods="5" coveredmethods="1"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="20" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="32" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="37" count="403" type="stmt"/>
+      </file>
+    </package>
+    <package name="service">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="api.ts" path="C:\Users\andre.souza\Documents\estudos\react-tdd\src\service\api.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

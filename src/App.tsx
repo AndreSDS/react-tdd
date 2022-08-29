@@ -1,16 +1,15 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import i18n from "./locale/i18n";
+import { createMockServer } from "./service/server";
+import { SignUpPage } from "./Pages/SignUp";
 import "./App.css";
-import { SignUp } from "./Pages/SignUp";
 
-import {createMockServer} from "./service/server";
-
+i18n.init();
 createMockServer();
 
 function App() {
   return (
     <div className="App">
-      <SignUp />
+      <SignUpPage />
     </div>
   );
 }
