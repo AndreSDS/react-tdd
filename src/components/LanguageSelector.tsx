@@ -12,7 +12,7 @@ export const LanguageSelector = () => {
   }
 
   return (
-    <div className="flex w-16 gap-2 pt-2">
+    <div className="flex w-16 gap-2 pt-2 m-auto">
       <img
         className="h-6 w-7"
         title="Portuguese"

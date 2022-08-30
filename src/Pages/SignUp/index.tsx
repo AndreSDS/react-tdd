@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
 import { Input } from "../../components/Input";
-import { LanguageSelector } from "../../components/LanguageSelector";
 
 interface ErrorsProps {
   username?: string;
@@ -89,7 +88,7 @@ export const SignUpPage = (props: any) => {
 
   const passwordMissmatch =
     formValues.password !== formValues.passwordRepeat
-      ? "Password does not match"
+      ? t("passwordMissmatch")
       : "";
 
   return (
@@ -164,8 +163,6 @@ export const SignUpPage = (props: any) => {
             Please check your email to activate your account
           </div>
         )}
-
-        <LanguageSelector />
       </div>
     </>
   );
