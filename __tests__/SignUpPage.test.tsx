@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUpPage } from "../src/Pages/SignUp";
+import { LanguageSelector } from "../src/components/LanguageSelector";
 import { api } from "../src/service/api";
 import { IUser } from "../src/interfaces/user";
 
@@ -18,71 +19,79 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-describe("SignUp Page", () => {
-  const i18n = {
-    signUp: "signUp",
-    username: "username",
-    email: "email",
-    password: "password",
-    passwordRepeat: "passwordRepeat",
-  };
+const i18nMocks = {
+  signUp: "signUp",
+  username: "username",
+  email: "email",
+  password: "password",
+  passwordRepeat: "passwordRepeat",
+};
 
+describe("SignUp Page", () => {
   beforeEach(() => {
     cleanup();
   });
 
-  beforeEach(() => {
-    render(<SignUpPage />);
-  });
-
   describe("Layout", () => {
     it("should have header", async () => {
-      const header = await screen.findByRole("heading", { name: i18n.signUp });
+      const header = await screen.findByRole("heading", {
+        name: i18nMocks.signUp,
+      });
       expect(header).toBeInTheDocument();
     });
 
     it("should have username input", () => {
-      const inputUserName = screen.getByLabelText(i18n.username);
+      const inputUserName = screen.getByLabelText(i18nMocks.username);
       expect(inputUserName).toBeInTheDocument();
     });
 
     it("should have email input", () => {
-      const inputEmail = screen.getByLabelText(i18n.email);
+      const inputEmail = screen.getByLabelText(i18nMocks.email);
       expect(inputEmail).toBeInTheDocument();
     });
 
     it("should have password input", () => {
-      const inputPassword = screen.getByLabelText(i18n.password);
+      const inputPassword = screen.getByLabelText(i18nMocks.password);
       expect(inputPassword).toBeInTheDocument();
     });
 
     it("should have password type for password input", () => {
-      const inputPassword = screen.getByLabelText(i18n.password);
+      const inputPassword = screen.getByLabelText(i18nMocks.password);
       expect(inputPassword).toHaveAttribute("type", "password");
     });
 
     it("should have password repeat input", () => {
-      const inputPasswordRepeat = screen.getByLabelText(i18n.passwordRepeat);
+      const inputPasswordRepeat = screen.getByLabelText(
+        i18nMocks.passwordRepeat
+      );
       expect(inputPasswordRepeat).toBeInTheDocument();
     });
 
     it("should have password repeat type for password repeat input", () => {
-      const inputPasswordRepeat = screen.getByLabelText(i18n.passwordRepeat);
+      const inputPasswordRepeat = screen.getByLabelText(
+        i18nMocks.passwordRepeat
+      );
       expect(inputPasswordRepeat).toHaveAttribute("type", "password");
     });
 
     it("should have submit button", () => {
-      const submitButton = screen.getByRole("button", { name: i18n.signUp });
+      const submitButton = screen.getByRole("button", {
+        name: i18nMocks.signUp,
+      });
       expect(submitButton).toBeInTheDocument();
     });
 
     it("should have submit button type submit", () => {
-      const submitButton = screen.getByRole("button", { name: i18n.signUp });
+      const submitButton = screen.getByRole("button", {
+        name: i18nMocks.signUp,
+      });
       expect(submitButton).toHaveAttribute("type", "submit");
     });
 
     it("should have disabled the button initially", () => {
-      const submitButton = screen.getByRole("button", { name: i18n.signUp });
+      const submitButton = screen.getByRole("button", {
+        name: i18nMocks.signUp,
+      });
       expect(submitButton).toBeDisabled();
     });
   });
@@ -114,11 +123,13 @@ describe("SignUp Page", () => {
         password: "123456",
       };
 
-      const inputUserName = screen.getByLabelText(i18n.username);
-      const inputEmail = screen.getByLabelText(i18n.email);
-      const inputPassword = screen.getByLabelText(i18n.password);
-      const inputPasswordRepeat = screen.getByLabelText(i18n.passwordRepeat);
-      submitButton = screen.getByRole("button", { name: i18n.signUp });
+      const inputUserName = screen.getByLabelText(i18nMocks.username);
+      const inputEmail = screen.getByLabelText(i18nMocks.email);
+      const inputPassword = screen.getByLabelText(i18nMocks.password);
+      const inputPasswordRepeat = screen.getByLabelText(
+        i18nMocks.passwordRepeat
+      );
+      submitButton = screen.getByRole("button", { name: i18nMocks.signUp });
 
       await userEvent.type(inputUserName, mockUserObject.username);
       await userEvent.type(inputEmail, mockUserObject.email);
@@ -180,7 +191,7 @@ describe("SignUp Page", () => {
     it("should hide spinner and enable button after successful sign up request", async () => {
       await setup();
 
-      const inputUserName = screen.getByLabelText(i18n.username);
+      const inputUserName = screen.getByLabelText(i18nMocks.username);
 
       await userEvent.clear(inputUserName);
 
@@ -229,10 +240,10 @@ describe("SignUp Page", () => {
     };
 
     it.each`
-      field            | message
-      ${i18n.username} | ${"Username is required"}
-      ${i18n.email}    | ${"E-mail cannot be null"}
-      ${i18n.password} | ${"Password must be at least 6 characters"}
+      field                 | message
+      ${i18nMocks.username} | ${"Username is required"}
+      ${i18nMocks.email}    | ${"E-mail cannot be null"}
+      ${i18nMocks.password} | ${"Password must be at least 6 characters"}
     `("displays $message for $field", async ({ field, message }) => {
       await setup();
 
@@ -256,8 +267,10 @@ describe("SignUp Page", () => {
     it("displays mismatch password message for password-repeat", async () => {
       await setup();
 
-      const inputPassword = screen.getByLabelText(i18n.password);
-      const inputPasswordRepeat = screen.getByLabelText(i18n.passwordRepeat);
+      const inputPassword = screen.getByLabelText(i18nMocks.password);
+      const inputPasswordRepeat = screen.getByLabelText(
+        i18nMocks.passwordRepeat
+      );
 
       await userEvent.type(inputPassword, "123456");
       await userEvent.type(inputPasswordRepeat, "123457");
@@ -268,10 +281,10 @@ describe("SignUp Page", () => {
     });
 
     it.each`
-      field            | message
-      ${i18n.username} | ${"Username is required"}
-      ${i18n.email}    | ${"E-mail cannot be null"}
-      ${i18n.password} | ${"Password must be at least 6 characters"}
+      field                 | message
+      ${i18nMocks.username} | ${"Username is required"}
+      ${i18nMocks.email}    | ${"E-mail cannot be null"}
+      ${i18nMocks.password} | ${"Password must be at least 6 characters"}
     `(
       "clears errors messages after $field is filled",
       async ({ field, message }) => {
@@ -298,22 +311,31 @@ describe("SignUp Page", () => {
   });
 
   fdescribe("Internationlization", () => {
-    let header: any;
-    let usernameLabel: any;
-    let emailLabel: any;
-    let passwordLabel: any;
-    let passwordRepeatLabel: any;
-    let submitButtonIntl: any;
-    let togglePortuguese: any;
-    let toggleEnglish: any;
+    let header: any,
+      usernameLabel: any,
+      emailLabel: any,
+      passwordLabel: any,
+      passwordRepeatLabel: any,
+      submitButtonIntl: any,
+      togglePortuguese: any,
+      toggleEnglish: any;
 
     const setup = () => {
-      header = screen.queryByRole("heading", { name: i18n.signUp });
-      usernameLabel = screen.queryByLabelText(i18n.username);
-      emailLabel = screen.queryByLabelText(i18n.email);
-      passwordLabel = screen.queryByLabelText(i18n.password);
-      passwordRepeatLabel = screen.queryByLabelText(i18n.passwordRepeat);
-      submitButtonIntl = screen.queryByRole("button", { name: i18n.signUp });
+      render(
+        <>
+          <SignUpPage />
+          <LanguageSelector />
+        </>
+      );
+
+      header = screen.queryByRole("heading", { name: i18nMocks.signUp });
+      usernameLabel = screen.queryByLabelText(i18nMocks.username);
+      emailLabel = screen.queryByLabelText(i18nMocks.email);
+      passwordLabel = screen.queryByLabelText(i18nMocks.password);
+      passwordRepeatLabel = screen.queryByLabelText(i18nMocks.passwordRepeat);
+      submitButtonIntl = screen.queryByRole("button", {
+        name: i18nMocks.signUp,
+      });
       togglePortuguese = screen.getByTitle("Portuguese");
       toggleEnglish = screen.getByTitle("English");
     };
