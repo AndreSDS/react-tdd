@@ -3,11 +3,10 @@ import "@testing-library/jest-dom";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUpPage } from "../src/Pages/SignUp";
+import { LanguageSelector } from "../src/components/LanguageSelector";
 import { api } from "../src/service/api";
 import { IUser } from "../src/interfaces/user";
-import { LanguageSelector } from "../src/components/LanguageSelector";
 import i18n from "../src/locale/i18n";
-import en from "../src/locale/en.json";
 
 jest.mock("../src/service/api");
 jest.mock("react-i18next", () => ({
@@ -195,6 +194,8 @@ describe("SignUp Page", () => {
     });
 
     it("should hide spinner and enable button after successful sign up request", async () => {
+      await setup();
+
       await userEvent.clear(usernameLabel);
 
       api.post = jest
@@ -269,13 +270,8 @@ describe("SignUp Page", () => {
     it("displays mismatch password message for password-repeat", async () => {
       await setup();
 
-      const inputPassword = screen.getByLabelText(i18nMocks.password);
-      const inputPasswordRepeat = screen.getByLabelText(
-        i18nMocks.passwordRepeat
-      );
-
-      await userEvent.type(inputPassword, "123456");
-      await userEvent.type(inputPasswordRepeat, "123457");
+      await userEvent.type(passwordLabel, "123456");
+      await userEvent.type(passwordRepeatLabel, "123457");
 
       validationMessage = screen.getByText(i18nMocks.passwordMissmatch);
 
