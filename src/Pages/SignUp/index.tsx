@@ -11,7 +11,7 @@ interface ErrorsProps {
 }
 
 export const SignUpPage = (props: any) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formValues, setFormValues] = useState({
     username: "",
     email: "",
@@ -59,6 +59,7 @@ export const SignUpPage = (props: any) => {
 
   const disableButton = formValues.password ? false : true;
 
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -70,9 +71,14 @@ export const SignUpPage = (props: any) => {
 
     setLoading(true);
 
+
     try {
       if (!passwordMissmatch) {
-        await api.post("/users", body);
+        await api.post("/users", body, {
+          headers: {
+            'Accept-Language': i18n.language
+          }
+        });
 
         setSignUpSuccess(true);
         setErrors({});

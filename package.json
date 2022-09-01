@@ -25,6 +25,7 @@
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.8",
     "i18next": "^21.9.1",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
     "miragejs": "^0.1.45",

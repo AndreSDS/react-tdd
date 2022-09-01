@@ -1,6 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUpPage } from "../src/Pages/SignUp";
 import { LanguageSelector } from "../src/components/LanguageSelector";
@@ -14,7 +20,8 @@ jest.mock("react-i18next", () => ({
     return {
       t: (str: string) => str,
       i18n: {
-        changeLanguage: () => new Promise(() => {}),
+        changeLanguage: jest.fn(),
+        language: i18n.language,
       },
     };
   },
@@ -33,7 +40,8 @@ const i18nMocks = {
   passwordMissmatch: "passwordMissmatch",
 };
 
-let header: any,
+let form: any,
+  header: any,
   usernameLabel: any,
   emailLabel: any,
   passwordLabel: any,
@@ -41,7 +49,12 @@ let header: any,
   submitButtonIntl: any,
   togglePortuguese: any,
   toggleEnglish: any,
-  validationMessage: any;
+  validationMessage: any,
+  acceptLanguage = i18n.language,
+  counter = 0,
+  mockReqBody: any;
+
+const message = "Please check your email to activate your account";
 
 const setupComponent = () => {
   render(
@@ -51,6 +64,7 @@ const setupComponent = () => {
     </>
   );
 
+  form = screen.queryByTestId("sign-up-form");
   header = screen.getByRole("heading", { name: i18nMocks.signUp });
   usernameLabel = screen.queryByLabelText(i18nMocks.username);
   emailLabel = screen.queryByLabelText(i18nMocks.email);
@@ -62,12 +76,23 @@ const setupComponent = () => {
 };
 
 describe("SignUp Page", () => {
-  beforeEach(() => i18n.changeLanguage("en"));
+  beforeAll(() => {
+    api.post = jest
+      .fn()
+      .mockImplementation(async (url: string, body: any, config) => {
+        counter += 1;
+        mockReqBody = await body;
+        return Promise.resolve({ data: body });
+      });
+  });
+
+  beforeEach(() => {
+    // i18n.changeLanguage("en");
+    setupComponent();
+  });
   afterEach(cleanup);
 
   describe("Layout", () => {
-    beforeEach(setupComponent);
-
     it("should have header", async () => {
       expect(header).toBeInTheDocument();
     });
@@ -110,26 +135,7 @@ describe("SignUp Page", () => {
   });
 
   describe("Behavior", () => {
-    let counter = 0;
-    let mockReqBody: any;
-    const message = "Please check your email to activate your account";
-
-    beforeAll(() => {
-      api.post = jest
-        .fn()
-        .mockImplementation(async (url: string, body: any) => {
-          counter += 1;
-          mockReqBody = await body;
-          return Promise.resolve({ data: body });
-        });
-    });
-
-    beforeEach(() => {
-      counter = 0;
-      setupComponent();
-    });
-
-    const setup = async () => {
+    const setupMockuser = async () => {
       const mockUserObject: IUser = {
         username: "test",
         email: "test@gmail.com",
@@ -142,23 +148,22 @@ describe("SignUp Page", () => {
       await userEvent.type(passwordRepeatLabel, mockUserObject.password);
     };
 
-    it("should have enabled the button when inputs password and password-repeat have same value", async () => {
-      await setup();
+    beforeEach(async () => {
+      counter = 0;
+      await setupMockuser();
+    });
 
+    it("should have enabled the button when inputs password and password-repeat have same value", async () => {
       expect(submitButtonIntl).toBeEnabled();
     });
 
     it("should sends username, email and password to backend when submit button is clicked", async () => {
-      await setup();
-
       await userEvent.click(submitButtonIntl);
 
       expect(mockReqBody).toEqual(mockReqBody);
     });
 
     it("should disable the button when there is an ongoing request", async () => {
-      await setup();
-
       await userEvent.click(submitButtonIntl);
       await userEvent.click(submitButtonIntl);
 
@@ -166,8 +171,6 @@ describe("SignUp Page", () => {
     });
 
     it("should display spinner when there is an ongoing request", async () => {
-      await setup();
-
       const spinner = screen.queryByRole("status");
 
       expect(spinner).toBeNull();
@@ -186,16 +189,12 @@ describe("SignUp Page", () => {
     });
 
     it("should display account activation notification after successful sign up request", async () => {
-      await setup();
-
       expect(screen.queryByText(message)).not.toBeInTheDocument();
       await userEvent.click(submitButtonIntl);
       expect(screen.queryByText(message)).toBeInTheDocument();
     });
 
     it("should hide spinner and enable button after successful sign up request", async () => {
-      await setup();
-
       await userEvent.clear(usernameLabel);
 
       api.post = jest
@@ -211,8 +210,6 @@ describe("SignUp Page", () => {
     });
 
     it("should hide the form after successful sign up request", async () => {
-      await setup();
-
       const form = screen.getByTestId("sign-up-form");
 
       await userEvent.click(submitButtonIntl);
@@ -248,8 +245,6 @@ describe("SignUp Page", () => {
       ${i18nMocks.email}    | ${"E-mail cannot be null"}
       ${i18nMocks.password} | ${"Password must be at least 6 characters"}
     `("displays $message for $field", async ({ field, message }) => {
-      await setup();
-
       const input = screen.getByLabelText(field);
       await userEvent.clear(input);
 
@@ -263,13 +258,11 @@ describe("SignUp Page", () => {
 
           expect(validationMessage).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 4000 }
       );
     });
 
     it("displays mismatch password message for password-repeat", async () => {
-      await setup();
-
       await userEvent.type(passwordLabel, "123456");
       await userEvent.type(passwordRepeatLabel, "123457");
 
@@ -292,11 +285,14 @@ describe("SignUp Page", () => {
 
         await userEvent.click(submitButtonIntl);
 
-        waitFor(async () => {
-          validationMessage = await screen.findByText(message);
+        waitFor(
+          async () => {
+            validationMessage = await screen.findByText(message);
 
-          expect(validationMessage).toBeInTheDocument();
-        });
+            expect(validationMessage).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
 
         await userEvent.type(input, "123456");
 
@@ -308,8 +304,6 @@ describe("SignUp Page", () => {
   });
 
   describe("Internationlization", () => {
-    beforeEach(setupComponent);
-
     const setupAssertions = () => {
       expect(header).toBeInTheDocument();
       expect(usernameLabel).toBeInTheDocument();
@@ -325,7 +319,6 @@ describe("SignUp Page", () => {
 
     it("displays all texts in Portuguese after change the language", async () => {
       await userEvent.click(togglePortuguese);
-
       setupAssertions();
     });
 
@@ -333,6 +326,24 @@ describe("SignUp Page", () => {
       await userEvent.click(toggleEnglish);
 
       setupAssertions();
+    });
+
+    it("sends accept language header as en to backend", async () => {
+      await userEvent.click(submitButtonIntl);
+
+      waitForElementToBeRemoved(form);
+
+      expect(acceptLanguage).toEqual("en");
+    });
+
+    it("sends accept language header as pt to backend", async () => {
+      await userEvent.click(togglePortuguese);
+      await userEvent.click(submitButtonIntl);
+
+      console.log(acceptLanguage);
+      // expect(acceptLanguage).toEqual("pt");
+      waitForElementToBeRemoved(form);
+
     });
   });
 });
