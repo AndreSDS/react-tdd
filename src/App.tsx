@@ -3,6 +3,8 @@ import { createMockServer } from "./service/server";
 import { SignUpPage } from "./Pages/SignUp";
 import "./App.css";
 import { LanguageSelector } from "./components/LanguageSelector";
+import { HomePage } from "./Pages/HomePage";
+import { LoginPage } from "./Pages/LoginPage";
 
 i18n.init();
 createMockServer();
@@ -10,7 +12,9 @@ createMockServer();
 function App() {
   return (
     <div className="App">
-      <SignUpPage />
+      {window.location.pathname === "/" && <HomePage />}
+      {window.location.pathname === "/signup" && <SignUpPage />}
+      {window.location.pathname === "/login" && <LoginPage />}
       <LanguageSelector />
     </div>
   );

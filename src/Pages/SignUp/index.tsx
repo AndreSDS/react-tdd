@@ -99,7 +99,7 @@ export const SignUpPage = (props: any) => {
 
   return (
     <>
-      <div className="w-full max-w-lg mx-auto flex flex-col">
+      <div data-testid="signup-page" className="w-full max-w-lg mx-auto flex flex-col">
         {!signUpSuccess && (
           <form
             data-testid="sign-up-form"
