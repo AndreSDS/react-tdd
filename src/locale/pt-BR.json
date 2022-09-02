@@ -4,5 +4,7 @@
   "email": "E-mail",
   "password": "Senha",
   "passwordRepeat": "Repita a senha",
-  "passwordMissmatch": "As senhas não conferem"
+  "passwordMissmatch": "As senhas não conferem",
+  "home": "Início",
+  "login": "Entrar"
 }
