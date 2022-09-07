@@ -1,8 +1,9 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../src/App";
 import { BrowserRouter } from "react-router-dom";
+import { api } from "../src/service/api";
 
 const i18nMocks = {
   home: "home",
@@ -18,11 +19,21 @@ describe("App", () => {
       render(<App />, { wrapper: BrowserRouter });
     };
 
+    beforeAll(() => {
+      api.post = jest.fn().mockImplementation(async () => {
+        return Promise.resolve();
+      });
+    });
+
+    afterEach(() => cleanup());
+
     it.each`
-      path         | pageTestId
-      ${"/"}       | ${"home-page"}
-      ${"/signup"} | ${"signup-page"}
-      ${"/login"}  | ${"login-page"}
+      path               | pageTestId
+      ${"/"}             | ${"home-page"}
+      ${"/signup"}       | ${"signup-page"}
+      ${"/login"}        | ${"login-page"}
+      ${"/activate/123"} | ${"activation-page"}
+      ${"/activate/456"} | ${"activation-page"}
     `(
       "should render $pageTestId when path is $path",
       async ({ path, pageTestId }) => {
@@ -33,13 +44,19 @@ describe("App", () => {
     );
 
     it.each`
-      path         | pageTestId
-      ${"/"}       | ${"signup-page"}
-      ${"/"}       | ${"login-page"}
-      ${"/signup"} | ${"home-page"}
-      ${"/signup"} | ${"login-page"}
-      ${"/login"}  | ${"home-page"}
-      ${"/login"}  | ${"signup-page"}
+      path               | pageTestId
+      ${"/"}             | ${"signup-page"}
+      ${"/"}             | ${"login-page"}
+      ${"/"}             | ${"activation-page"}
+      ${"/signup"}       | ${"home-page"}
+      ${"/signup"}       | ${"login-page"}
+      ${"/signup"}       | ${"activation-page"}
+      ${"/login"}        | ${"home-page"}
+      ${"/login"}        | ${"signup-page"}
+      ${"/login"}        | ${"activation-page"}
+      ${"/activate/123"} | ${"home-page"}
+      ${"/activate/123"} | ${"signup-page"}
+      ${"/activate/123"} | ${"login-page"}
     `(
       "should not render $pageTestId when path is $path",
       async ({ path, pageTestId }) => {
@@ -97,3 +114,5 @@ describe("App", () => {
     });
   });
 });
+
+console.error = () => {};

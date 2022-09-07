@@ -1,3 +1,5 @@
+import { RefObject } from "react";
+
 interface InputProps {
   label: string;
   id: string;
@@ -6,7 +8,7 @@ interface InputProps {
   errorMessage?: string;
 }
 
-export function Input({ id, label, onChange, errorMessage, type }: InputProps) {
+export function Input({ id, label, onChange, errorMessage, type}: InputProps) {
   const inputClass = errorMessage ? "input error-input" : "input";
 
   return (

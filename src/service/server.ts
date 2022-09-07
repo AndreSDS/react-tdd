@@ -44,7 +44,7 @@ export function createMockServer() {
       this.post("/users", (schema, request) => {
         let data = JSON.parse(request.requestBody);
         const { username, email, password } = data;
-        
+
         if (username && email && password && password.length > 5) {
           return schema.db.users.insert(data);
         } else {
@@ -57,6 +57,21 @@ export function createMockServer() {
                 email: "E-mail cannot be null",
                 password: "Password must be at least 6 characters",
               },
+            }
+          );
+        }
+      });
+
+      this.post("/users/token/:token", (schema, request) => {
+        const { token } = request.params;
+        if (token) {
+          return new Response(200);
+        } else {
+          return new Response(
+            400,
+            {},
+            {
+              errors: { message: "Activation failed" },
             }
           );
         }

@@ -1,4 +1,11 @@
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  LegacyRef,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
@@ -24,16 +31,18 @@ export const SignUpPage = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
+  let newFormValues = { ...formValues };
+  let errorFields = { ...errors };
+
   const onChangeInputValue = (e: ChangeEvent<HTMLInputElement> | undefined) => {
     if (e) {
       const { id, value } = e.currentTarget;
-      const newFormValues = { ...formValues, [id]: value };
-      const errorFields = { ...errors };
+      newFormValues = { ...newFormValues, [id]: value };
       delete errorFields[id as keyof ErrorsProps];
-
-      setFormValues(newFormValues);
-      setErrors(errorFields);
     }
+
+    setFormValues((prev) => ({ ...prev, ...newFormValues }));
+    setErrors((prev) => ({ ...prev, ...errorFields }));
   };
 
   const handleErros = (data: any) => {
@@ -57,8 +66,9 @@ export const SignUpPage = (props: any) => {
     }
   };
 
-  const disableButton = formValues.password ? false : true;
-
+  const disableButton = useMemo(() => {
+    return formValues.password ? false : true;
+  }, [formValues]);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,13 +81,12 @@ export const SignUpPage = (props: any) => {
 
     setLoading(true);
 
-
     try {
       if (!passwordMissmatch) {
         await api.post("/users", body, {
           headers: {
-            'Accept-Language': i18n.language
-          }
+            "Accept-Language": i18n.language,
+          },
         });
 
         setSignUpSuccess(true);
@@ -99,7 +108,10 @@ export const SignUpPage = (props: any) => {
 
   return (
     <>
-      <div data-testid="signup-page" className="w-full max-w-lg mx-auto flex flex-col">
+      <div
+        data-testid="signup-page"
+        className="w-full max-w-lg mx-auto flex flex-col"
+      >
         {!signUpSuccess && (
           <form
             data-testid="sign-up-form"
