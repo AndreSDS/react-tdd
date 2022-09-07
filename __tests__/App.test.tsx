@@ -1,8 +1,8 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
 import App from "../src/App";
+import { BrowserRouter } from "react-router-dom";
 
 const i18nMocks = {
   home: "home",
@@ -15,7 +15,7 @@ describe("App", () => {
     const setup = async (path: string) => {
       window.history.pushState({}, "", path);
 
-      render(<App />);
+      render(<App />, { wrapper: BrowserRouter });
     };
 
     it.each`
@@ -62,7 +62,7 @@ describe("App", () => {
       expect(link).toBeInTheDocument();
     });
 
-    fit.each`
+    it.each`
       initialPath | clickingTo   | visiblePage
       ${"/"}      | ${"Sign Up"} | ${"signup-page"}
       ${"/login"} | ${"Login"}   | ${"login-page"}
@@ -76,8 +76,24 @@ describe("App", () => {
 
         await userEvent.click(link);
 
-        expect(screen.queryByTestId(visiblePage)).toBeInTheDocument();
+        waitFor(() => {
+          const page = screen.queryByTestId(visiblePage);
+          expect(page).toBeInTheDocument();
+        });
       }
     );
+
+    it("should display home-page when clicking on brand logo", async () => {
+      await setup("/login");
+
+      const brandLogo = screen.getByTestId("home-logo");
+
+      await userEvent.click(brandLogo);
+
+      waitFor(() => {
+        const homePage = screen.queryByTestId("home-page");
+        expect(homePage).toBeInTheDocument();
+      });
+    });
   });
 });
