@@ -17,7 +17,7 @@ export const ActivationPage = () => {
 
   useEffect(() => {
     sendToken();
-  }, []);
+  }, [token]);
 
   return (
     <div data-testid="activation-page">

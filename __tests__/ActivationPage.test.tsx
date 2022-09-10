@@ -15,7 +15,7 @@ let counter = 0;
 describe("Activation Page", () => {
   const setup = (token: string) => {
     api.post = jest.fn().mockImplementation(async (url, request) => {
-      counter = 1;
+      counter += 1;
 
       if (token !== "123") {
         return Promise.reject();
@@ -28,6 +28,7 @@ describe("Activation Page", () => {
   };
 
   afterEach(() => {
+    counter = 0;
     cleanup();
   });
 
@@ -40,10 +41,19 @@ describe("Activation Page", () => {
 
   it("should sends activation request to server when token is valid", async () => {
     setup("123");
-
-    const message = await screen.findByText("Account is activated");
-
     expect(counter).toBe(1);
+  });
+
+  it("should sends activation request when token changes", async () => {
+    setup("123");
+    const message = await screen.findByText("Account is activated");
+    expect(message).toBeInTheDocument();
+
+    setup("456");
+    const message2 = await screen.findByText("Activation failed");
+    expect(message2).toBeInTheDocument();
+
+    expect(counter).toBe(2);
   });
 
   it("should displays activation error message when token is invalid", async () => {
@@ -53,3 +63,5 @@ describe("Activation Page", () => {
     expect(message).toBeInTheDocument();
   });
 });
+
+console.error = () => {};

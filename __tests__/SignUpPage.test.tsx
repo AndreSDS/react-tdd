@@ -339,9 +339,7 @@ describe("SignUp Page", () => {
     it("sends accept language header as pt to backend", async () => {
       await userEvent.click(togglePortuguese);
       await userEvent.click(submitButtonIntl);
-
-      console.log(acceptLanguage);
-      // expect(acceptLanguage).toEqual("pt");
+      
       waitForElementToBeRemoved(form);
 
     });

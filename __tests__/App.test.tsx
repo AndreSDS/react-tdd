@@ -5,12 +5,6 @@ import App from "../src/App";
 import { BrowserRouter } from "react-router-dom";
 import { api } from "../src/service/api";
 
-const i18nMocks = {
-  home: "home",
-  signUp: "signUp",
-  login: "login",
-};
-
 describe("App", () => {
   describe("Routing", () => {
     const setup = async (path: string) => {
