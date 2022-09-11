@@ -9,9 +9,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
-import { Input } from "../../components/Input";
-import { CustomAlert } from "../../components/Alet";
-import { ProgressIndicator } from "../../components/ProgressIndicator";
+import { Input } from "../../components";
+import { CustomAlert } from "../../components";
+import { ProgressIndicator } from "../../components";
 
 interface ErrorsProps {
   username?: string;

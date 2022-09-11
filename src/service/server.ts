@@ -1,37 +1,47 @@
-import { createServer, Model, Response } from "miragejs";
+import { createServer, Model, Response, Factory } from "miragejs";
 import { IUser } from "../interfaces/user";
+import { getPage } from "./usersMock";
 
 export function createMockServer() {
   return createServer({
     models: {
-      user: Model,
+      user: Model.extend({} as IUser),
+    },
+
+    factories: {
+      user: Factory.extend({
+        id(i) {
+          return `user-${i}`;
+        },
+        username(i) {
+          return `user-${i}`;
+        },
+        email(i) {
+          return `user-${i}`;
+        },
+        password(i) {
+          return `user-${i}`;
+        },
+      }),
     },
 
     seeds(server) {
-      server.db.loadData({
-        users: [
-          {
-            id: 1,
-            username: "andré",
-            email: "rammpk@email.com",
-            password: "123456",
-          },
-          {
-            id: 2,
-            username: "bárbara",
-            email: "babi@email.com",
-            password: "123456",
-          },
-        ],
-      });
+      server.createList("user", 7);
     },
 
     routes() {
       this.namespace = "api";
 
-      this.get("/users", () => {
+      this.get("/users", (schema, request) => {
+        const { page, size } = request.queryParams;
+
         const data = this.schema.all("user");
-        return data;
+        const userPagenation = getPage(Number(page), Number(size), data.models);
+        const dataUsers = userPagenation.content.map((item) => ({
+          ...item.attrs,
+          password: undefined,
+        }));
+        return { data: dataUsers };
       });
 
       this.get("/users/:username", (schema, request) => {
@@ -46,7 +56,8 @@ export function createMockServer() {
         const { username, email, password } = data;
 
         if (username && email && password && password.length > 5) {
-          return schema.db.users.insert(data);
+          data = { ...data, id: schema.db.users.length + 1 };
+          return schema.create("user", data);
         } else {
           return new Response(
             400,

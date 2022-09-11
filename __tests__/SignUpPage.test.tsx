@@ -84,6 +84,10 @@ describe("SignUp Page", () => {
         mockReqBody = await body;
         return Promise.resolve({ data: body });
       });
+
+    api.get = jest.fn().mockResolvedValue({
+      data: [],
+    });
   });
 
   beforeEach(() => {
@@ -339,9 +343,8 @@ describe("SignUp Page", () => {
     it("sends accept language header as pt to backend", async () => {
       await userEvent.click(togglePortuguese);
       await userEvent.click(submitButtonIntl);
-      
-      waitForElementToBeRemoved(form);
 
+      waitForElementToBeRemoved(form);
     });
   });
 });

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { CustomAlert } from "../../components/Alet";
-import { ProgressIndicator } from "../../components/ProgressIndicator";
+import { CustomAlert } from "../../components";
+import { ProgressIndicator } from "../../components";
 import { api } from "../../service/api";
 
 export const ActivationPage = () => {
@@ -9,9 +9,8 @@ export const ActivationPage = () => {
   const { token } = useParams();
 
   async function sendToken() {
+    setResult("");
     try {
-      setResult("");
-
       await api.post(`/users/token/${token}`);
       setResult("success");
     } catch (error) {
@@ -24,7 +23,10 @@ export const ActivationPage = () => {
   }, [token]);
 
   return (
-    <div data-testid="activation-page" className="w-full m-6 p-6  flex justify-center align-middle">
+    <div
+      data-testid="activation-page"
+      className="w-full m-6 p-6  flex justify-center align-middle"
+    >
       {result === "success" && (
         <CustomAlert message="Account is activated" type="success" />
       )}
@@ -33,9 +35,7 @@ export const ActivationPage = () => {
         <CustomAlert message="Activation failed" type="error" />
       )}
 
-      {!result && (
-        <ProgressIndicator color="sky" />
-      )}
+      {!result && <ProgressIndicator color="sky" />}
     </div>
   );
 };
