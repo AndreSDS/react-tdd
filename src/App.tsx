@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar handlePath={handlePath} />
+      <Navbar />
       <Router />
       <LanguageSelector />
     </div>

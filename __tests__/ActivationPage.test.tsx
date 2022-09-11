@@ -62,6 +62,18 @@ describe("Activation Page", () => {
     const message = await screen.findByText("Activation failed");
     expect(message).toBeInTheDocument();
   });
+
+  it("should displays a spinner while waiting for the response", async () => {
+    setup("654");
+
+    const spinner = screen.queryByRole("status");
+    expect(spinner).toBeInTheDocument();
+
+    const message = await screen.findByText("Activation failed");
+    expect(message).toBeInTheDocument();
+
+    expect(spinner).not.toBeInTheDocument();
+  });
 });
 
 console.error = () => {};

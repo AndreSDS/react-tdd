@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
 import { Input } from "../../components/Input";
+import { CustomAlert } from "../../components/Alet";
+import { ProgressIndicator } from "../../components/ProgressIndicator";
 
 interface ErrorsProps {
   username?: string;
@@ -162,10 +164,7 @@ export const SignUpPage = (props: any) => {
                 type="submit"
               >
                 {loading && (
-                  <div
-                    role="status"
-                    className="w-6 h-6 border-4 border-dashed rounded-full animate-spin dark:border-zinc-100 mr-3"
-                  ></div>
+                  <ProgressIndicator />
                 )}
                 {t("signUp")}
               </button>
@@ -174,12 +173,10 @@ export const SignUpPage = (props: any) => {
         )}
 
         {signUpSuccess && (
-          <div
-            className="w-full p-4 mb-4 mt-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-            role="alert"
-          >
-            Please check your email to activate your account
-          </div>
+          <CustomAlert
+            message="Please check your email to activate your account"
+            type="success"
+          />
         )}
       </div>
     </>

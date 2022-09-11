@@ -6,7 +6,7 @@ interface NavBarProps {
   handlePath: (newPath: string) => void;
 }
 
-export const Navbar = ({ handlePath }: NavBarProps) => {
+export const Navbar = () => {
   const { t } = useTranslation();
 
   return (
@@ -28,6 +28,7 @@ export const Navbar = ({ handlePath }: NavBarProps) => {
 
         <div className="flex justify-between items-center">
           <Link
+            data-testid="signup-link"
             className="flex items-center ml-3"
             to="/signup"
             title={t("signUp")}
