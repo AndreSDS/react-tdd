@@ -33,14 +33,17 @@ export function createMockServer() {
       this.namespace = "api";
 
       this.get("/users", (schema, request) => {
-        const { page, size } = request.queryParams;
+        const { page, size } = request?.queryParams;
 
         const data = this.schema.all("user");
         const userPagenation = getPage(Number(page), Number(size), data.models);
-        const dataUsers = userPagenation.content.map((item) => ({
-          ...item.attrs,
-          password: undefined,
-        }));
+        const dataUsers = {
+          ...userPagenation,
+          content: userPagenation.content.map((item) => ({
+            ...item.attrs,
+            password: undefined,
+          })),
+        };
         return { data: dataUsers };
       });
 

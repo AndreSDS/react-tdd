@@ -1,39 +1,96 @@
 import React from "react";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { UserList } from "../src/components";
 import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
 
 describe("UserList", () => {
-  const setup = async (page: number, size: number) => {
-    if (Number.isNaN(page)) {
-      page = 0;
-    }
+  const setup = async () => {
+    api.get = jest.fn().mockImplementation((url, body) => {
+      let { page, size } = body.params;
 
-    if (Number.isNaN(size)) {
-      size = 5;
-    }
+      if (Number.isNaN(page)) {
+        page = 0;
+      }
 
-    api.get = jest.fn().mockResolvedValue({
-      data: getPage(page, size, usersMock),
-    });
+      if (Number.isNaN(size)) {
+        size = 3;
+      }
 
-    await waitFor(() => {
-      render(<UserList />);
+      return Promise.resolve({
+        data: {
+          data: getPage(Number(page), Number(size), usersMock),
+        },
+      });
     });
   };
+
+  beforeEach(() => {
+    setup();
+    render(<UserList />);
+  });
 
   afterEach(() => {
     cleanup();
   });
 
   it("should displays two users in the list", async () => {
-    setup(0, 3);
-
-    waitFor(async () => {
-      const listUsers = await screen.findAllByText(/user/i);
+    waitFor(() => {
+      const listUsers = screen.queryAllByText(/user-/);
 
       expect(listUsers.length).toBe(3);
     });
+  });
+
+  it("should displays next page link", async () => {
+    const nextPageLink = await screen.findByText(/next/i);
+
+    expect(nextPageLink).toBeInTheDocument();
+  });
+
+  it("should displays next page after click on next page link", async () => {
+    const nextPageLink = await screen.findByText(/next/i);
+
+    await userEvent.click(nextPageLink);
+
+    const firstUserOnPage2 = await screen.findByText(/andré/i);
+
+    expect(firstUserOnPage2).toBeInTheDocument();
+  });
+
+  it("should hide next page link at last page", async () => {
+    const nextPageLink = await screen.findByText(/next/i);
+
+    await userEvent.click(nextPageLink);
+    await userEvent.click(nextPageLink);
+
+    const userAtLastPage = await screen.findByText(/daniel/i);
+    expect(userAtLastPage).toBeInTheDocument();
+    expect(nextPageLink).not.toBeInTheDocument();
+  });
+
+  it("should not displays previous page link", async () => {
+    const previousPageLink = screen.queryByText(/previous/i);
+    expect(previousPageLink).not.toBeInTheDocument();
+  });
+
+  it("should displays previous page link after click on next page link", async () => {
+    const nextPageLink = await screen.findByText(/next/i);
+    await userEvent.click(nextPageLink);
+
+    const previousPageLink = await screen.findByText(/previous/i);
+    expect(previousPageLink).toBeInTheDocument();
+  });
+
+  it("should displays previous page after click on previous page link", async () => {
+    const nextPageLink = await screen.findByText(/next/i);
+    await userEvent.click(nextPageLink);
+
+    const previousPageLink = await screen.findByText(/previous/i);
+    await userEvent.click(previousPageLink);
+
+    const firstUserOnPage1 = await screen.findByText(/admin/i);
+    expect(firstUserOnPage1).toBeInTheDocument();
   });
 });
