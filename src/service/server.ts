@@ -33,13 +33,13 @@ export function createMockServer() {
       this.namespace = "api";
 
       this.get("/users", (schema, request) => {
-        const { page, size } = request?.queryParams;
+        const { page, size }: any = request?.queryParams;
 
         const data = this.schema.all("user");
         const userPagenation = getPage(Number(page), Number(size), data.models);
         const dataUsers = {
           ...userPagenation,
-          content: userPagenation.content.map((item) => ({
+          content: userPagenation.content.map((item: any) => ({
             ...item.attrs,
             password: undefined,
           })),
@@ -47,10 +47,9 @@ export function createMockServer() {
         return { data: dataUsers };
       });
 
-      this.get("/users/:username", (schema, request) => {
-        const data = schema.db.users.filter(
-          (user: IUser) => user.username === request.params.username
-        )[0];
+      this.get("/users/:id", (schema, request) => {
+        const data: any = schema.findBy("user", { id: request.params.id });
+
         return data;
       });
 

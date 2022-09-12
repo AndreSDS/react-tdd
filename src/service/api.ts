@@ -16,3 +16,12 @@ export const getUsers = async (page: number) => {
     console.log(error);
   }
 };
+
+export const getUserById = async (id: string) => {
+  try {
+    const { data } = await api.get(`/users/${id}`);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

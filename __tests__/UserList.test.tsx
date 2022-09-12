@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { UserList } from "../src/components";
 import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
+import { BrowserRouter } from "react-router-dom";
 
 describe("UserList", () => {
   const setup = async () => {
@@ -28,7 +29,7 @@ describe("UserList", () => {
 
   beforeEach(() => {
     setup();
-    render(<UserList />);
+    render(<UserList />, { wrapper: BrowserRouter });
   });
 
   afterEach(() => {

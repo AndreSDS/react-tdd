@@ -91,7 +91,6 @@ describe("SignUp Page", () => {
   });
 
   beforeEach(() => {
-    // i18n.changeLanguage("en");
     setupComponent();
   });
   afterEach(cleanup);
@@ -141,6 +140,7 @@ describe("SignUp Page", () => {
   describe("Behavior", () => {
     const setupMockuser = async () => {
       const mockUserObject: IUser = {
+        id: '1',
         username: "test",
         email: "test@gmail.com",
         password: "123456",

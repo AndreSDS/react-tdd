@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import App from "../src/App";
 import { BrowserRouter } from "react-router-dom";
 import { api } from "../src/service/api";
+import { usersMock, getPage } from "../src/service/usersMock";
 
 describe("App", () => {
   describe("Routing", () => {
@@ -16,6 +17,24 @@ describe("App", () => {
     beforeAll(() => {
       api.post = jest.fn().mockImplementation(async () => {
         return Promise.resolve();
+      });
+
+      api.get = jest.fn().mockImplementation((url, body) => {
+        let { page, size } = body?.params;
+
+        if (!page) {
+          page = 0;
+        }
+
+        if (!size) {
+          size = 3;
+        }
+
+        return Promise.resolve({
+          data: {
+            data: getPage(Number(page), Number(size), usersMock),
+          },
+        });
       });
     });
 
@@ -105,6 +124,16 @@ describe("App", () => {
         const homePage = screen.queryByTestId("home-page");
         expect(homePage).toBeInTheDocument();
       });
+    });
+
+    fit("should navigates to user page when click on user name", async () => {
+      await setup("/");
+      let userName = await screen.findByText(/admin/i);
+
+      await userEvent.click(userName);
+
+      const page = screen.queryByTestId(/user-page/i);
+      expect(page).toBeInTheDocument();
     });
   });
 });

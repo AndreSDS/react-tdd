@@ -5,6 +5,7 @@ import { LanguageSelector } from "./LanguageSelector";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { UserList } from "./UserList";
 import { PaginationButton } from "./PaginationButton";
+import { UserListItem} from "./UserListItem";
 
 export {
   Input,
@@ -14,4 +15,5 @@ export {
   UserList,
   ProgressIndicator,
   PaginationButton,
+  UserListItem
 };
