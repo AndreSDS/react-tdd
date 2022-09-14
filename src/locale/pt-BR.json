@@ -6,5 +6,9 @@
   "passwordRepeat": "Repita a senha",
   "passwordMissmatch": "As senhas não conferem",
   "home": "Início",
-  "login": "Entrar"
+  "login": "Entrar",
+  "nextPage": "próxima",
+  "previousPage": "anterior",
+  "users": "Usuários",
+  "user": "Usuário"
 }

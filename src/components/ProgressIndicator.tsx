@@ -1,16 +1,8 @@
-interface ProgressIndicatorProps {
-  color?: string;
-  size?: string;
-}
-
-export const ProgressIndicator = ({
-  color = "zinc",
-  size = "6",
-}: ProgressIndicatorProps) => {
+export const ProgressIndicator = () => {
   return (
     <div
       role="status"
-      className={`w-${size} h-${size} border-4 border-dashed rounded-full animate-spin dark:border-${color}-100 mr-3`}
+      className={`w-6 h-6 border-4 border-dashed rounded-full animate-spin dark:border-zync-100 mr-3`}
     ></div>
   );
 };

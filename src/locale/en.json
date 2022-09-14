@@ -6,5 +6,9 @@
   "passwordRepeat": "Password Repeat",
   "passwordMissmatch": "Passwords do not match",
   "home": "Home",
-  "login": "Login"
+  "login": "Login",
+  "nextPage": "next",
+  "previousPage": "previous",
+  "users": "Users",
+  "user": "User"
 }

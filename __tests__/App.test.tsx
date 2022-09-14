@@ -126,7 +126,7 @@ describe("App", () => {
       });
     });
 
-    fit("should navigates to user page when click on user name", async () => {
+    it("should navigates to user page when click on user name", async () => {
       await setup("/");
       let userName = await screen.findByText(/admin/i);
 
