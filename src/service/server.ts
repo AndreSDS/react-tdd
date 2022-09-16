@@ -1,4 +1,4 @@
-import { createServer, Model, Response, Factory } from "miragejs";
+import { createServer, Model, Response, Factory, Request } from "miragejs";
 import { IUser } from "../interfaces/user";
 import { getPage } from "./usersMock";
 
@@ -32,7 +32,7 @@ export function createMockServer() {
     routes() {
       this.namespace = "api";
 
-      this.get("/users", (schema, request) => {
+      this.get("/users", (schema, request: Request) => {
         const { page, size }: any = request?.queryParams;
 
         const data = this.schema.all("user");
@@ -48,8 +48,8 @@ export function createMockServer() {
       });
 
       this.get("/users/:id", (schema, request) => {
-        const data: any = schema.findBy("user", { id: request.params.id });
-
+        const { id } = request.params;
+        const data: any = schema.findBy("user", { id });
         return data;
       });
 

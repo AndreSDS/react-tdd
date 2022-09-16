@@ -11,12 +11,11 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-white mb-3 px-2 sm:px-4 py-2.5 dark:bg-gray-400 w-full">
-      <div className="container flex flex-wrap justify-between items-center mx-auto">
+      <div className="container flex justify-between items-center mx-auto">
         <Link
           to="/"
           title={t("home")}
-          // onClick={onClick}
-          className="flex flex-1 items-center"
+          className="flex items-center"
         >
           <img
             data-testid="home-logo"

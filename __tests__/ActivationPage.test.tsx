@@ -66,7 +66,8 @@ describe("Activation Page", () => {
   it("should displays a spinner while waiting for the response", async () => {
     setup("654");
 
-    const spinner = screen.queryByRole("status");
+    const spinner = screen.getByRole("status");
+
     expect(spinner).toBeInTheDocument();
 
     const message = await screen.findByText("Activation failed");

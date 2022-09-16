@@ -35,7 +35,7 @@ export const ActivationPage = () => {
         <CustomAlert message="Activation failed" type="error" />
       )}
 
-      {!result && <ProgressIndicator color="sky" />}
+      {!result && <ProgressIndicator />}
     </div>
   );
 };

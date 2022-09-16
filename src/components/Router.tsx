@@ -6,7 +6,6 @@ import { SignUpPage } from "../Pages/SignUp";
 import { UserPage } from "../Pages/UserPage";
 
 export const Router = () => {
-  const { token } = useParams();
 
   return (
     <Routes>
