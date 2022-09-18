@@ -1,4 +1,5 @@
 import axios from "axios";
+import { IUser } from "../interfaces/user";
 export const api = axios.create({
   baseURL: "http://127.0.0.1:5173/api",
 });
@@ -18,10 +19,6 @@ export const getUsers = async (page: number) => {
 };
 
 export const getUserById = async (id: string) => {
-  try {
-    const data = await api.get(`/users/${id}`);
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
+  const data: IUser = await api.get(`/users/${id}`);
+  return data;
 };

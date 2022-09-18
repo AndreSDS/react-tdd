@@ -49,7 +49,18 @@ export function createMockServer() {
 
       this.get("/users/:id", (schema, request) => {
         const { id } = request.params;
-        const data: any = schema.findBy("user", { id });
+        const data: IUser | null = schema.findBy("user", { id });
+
+        if (!data) {
+          return new Response(
+            404,
+            {},
+            {
+              message: "User not found",
+            }
+          );
+        }
+
         return data;
       });
 
