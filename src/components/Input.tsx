@@ -20,6 +20,7 @@ export function Input({ id, label, onChange, errorMessage, type}: InputProps) {
         type={type}
         className={inputClass}
         id={id}
+        placeholder={label}
         onChange={onChange}
       />
       {errorMessage && <span className="error">{errorMessage}</span>}

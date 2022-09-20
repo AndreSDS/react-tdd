@@ -1,5 +1,7 @@
 import axios from "axios";
 import { IUser } from "../interfaces/user";
+import i18n from "../locale/i18n";
+
 export const api = axios.create({
   baseURL: "http://127.0.0.1:5173/api",
 });
@@ -20,5 +22,15 @@ export const getUsers = async (page: number) => {
 
 export const getUserById = async (id: string) => {
   const data: IUser = await api.get(`/users/${id}`);
+  return data;
+};
+
+export const loginUser = async (body: { email: string; password: string }) => {
+  const data = await api.post("/auth", body, {
+    headers: {
+      "Accept-Language": i18n.language,
+    },
+  });
+
   return data;
 };

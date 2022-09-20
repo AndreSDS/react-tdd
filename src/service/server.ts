@@ -17,10 +17,10 @@ export function createMockServer() {
           return `user-${i}`;
         },
         email(i) {
-          return `user-${i}`;
+          return `user-${i}@email.com`;
         },
         password(i) {
-          return `user-${i}`;
+          return `user-0${i}`;
         },
       }),
     },
@@ -96,6 +96,23 @@ export function createMockServer() {
             {},
             {
               errors: { message: "Activation failed" },
+            }
+          );
+        }
+      });
+
+      this.post("/auth", (schema, request) => {
+        const { email, password } = JSON.parse(request.requestBody);
+        const data: IUser | null = schema.findBy("user", { email, password });
+
+        if (data) {
+          return new Response(200);
+        } else {
+          return new Response(
+            401,
+            {},
+            {
+              message: "Incorrect email or password",
             }
           );
         }
