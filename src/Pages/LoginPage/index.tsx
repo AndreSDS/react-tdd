@@ -1,13 +1,15 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomAlert, Input, ProgressIndicator } from "../../components";
+import { useNavigate } from "react-router-dom";
+import { ButtonWithProgress, CustomAlert, Input } from "../../components";
 import { api, loginUser } from "../../service/api";
 
-interface ErrorsProps {
-  message?: string;
+interface LoginProps {
+  onLoginSuccess: (auth: {}) => void;
 }
 
-export const LoginPage = () => {
+export const LoginPage = ({ onLoginSuccess }: LoginProps) => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [formValues, setFormValues] = useState({
     email: "",
@@ -47,11 +49,14 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      await loginUser(body);
-
-      setErrorMessage("");
-
+      const response = await loginUser(body);
       setLoading(false);
+      const auth = {
+        isLoggedIn: true,
+        id: response.data.id,
+      };
+      onLoginSuccess(auth);
+      navigate("/");
     } catch (error) {
       const errors: any = error;
       if (errors.response.status === 401) {
@@ -79,7 +84,6 @@ export const LoginPage = () => {
             id="email"
             label={t("email")}
             onChange={onChangeInputValue}
-            // errorMessage={errors.email}
           />
 
           <Input
@@ -87,21 +91,13 @@ export const LoginPage = () => {
             id="password"
             label={t("password")}
             onChange={onChangeInputValue}
-            // errorMessage={errors.password}
           />
 
-          <button
-            className={
-              disableButton || loading
-                ? "disabled:opacity-75 hover:opacity-75 button"
-                : "button"
-            }
+          <ButtonWithProgress
+            title={t("login")}
+            loading={loading}
             disabled={disableButton || loading}
-            type="submit"
-          >
-            {loading && <ProgressIndicator />}
-            {t("login")}
-          </button>
+          />
 
           {errorMessage && !loading && (
             <CustomAlert type="error" message={errorMessage} />

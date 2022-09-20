@@ -1,22 +1,22 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import brandLogo from "../images/rengar_logo.png";
 
 interface NavBarProps {
-  handlePath: (newPath: string) => void;
+  auth: {
+    isLoggedIn: boolean;
+    id: string;
+  };
 }
 
-export const Navbar = () => {
+export const Navbar = ({ auth: { id, isLoggedIn } }: NavBarProps) => {
   const { t } = useTranslation();
 
   return (
     <nav className="bg-white mb-3 px-2 sm:px-4 py-2.5 dark:bg-gray-400 w-full">
       <div className="container flex justify-between items-center mx-auto">
-        <Link
-          to="/"
-          title={t("home")}
-          className="flex items-center"
-        >
+        <Link to="/" title={t("home")} className="flex items-center">
           <img
             data-testid="home-logo"
             className="w-12 h-12 mr-2 rounded-full border-4 border-indigo-200 border-solid shadow-lg"
@@ -26,21 +26,31 @@ export const Navbar = () => {
         </Link>
 
         <div className="flex justify-between items-center">
-          <Link
-            data-testid="signup-link"
-            className="flex items-center ml-3"
-            to="/signup"
-            title={t("signUp")}
-          >
-            {t("signUp")}
-          </Link>
-          <Link
-            className="flex items-center ml-3"
-            to="/login"
-            title={t("login")}
-          >
-            {t("login")}
-          </Link>
+          {!isLoggedIn && (
+            <>
+              <Link
+                data-testid="signup-link"
+                className="flex items-center ml-3"
+                to="/signup"
+                title={t("signUp")}
+              >
+                {t("signUp")}
+              </Link>
+              <Link
+                className="flex items-center ml-3"
+                to="/login"
+                title={t("login")}
+              >
+                {t("login")}
+              </Link>
+            </>
+          )}
+
+          {isLoggedIn && (
+            <Link className="flex items-center ml-3" to={`/user/${id}`}>
+              My Profile
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -9,9 +9,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../service/api";
-import { Input } from "../../components";
+import { ButtonWithProgress, Input } from "../../components";
 import { CustomAlert } from "../../components";
-import { ProgressIndicator } from "../../components";
 
 interface ErrorsProps {
   username?: string;
@@ -109,76 +108,65 @@ export const SignUpPage = (props: any) => {
       : "";
 
   return (
-    
-      <div
-        data-testid="signup-page"
-        className="w-full max-w-lg mx-auto flex flex-col"
-      >
-        {!signUpSuccess && (
-          <form
-            data-testid="sign-up-form"
-            onSubmit={onSubmit}
-            className="grow bg-white shadow-md rounded px-8 py-6"
-          >
-            <h1 className="font-bold text-xl mb-3">{t("signUp")}</h1>
+    <div
+      data-testid="signup-page"
+      className="w-full max-w-lg mx-auto flex flex-col"
+    >
+      {!signUpSuccess && (
+        <form
+          data-testid="sign-up-form"
+          onSubmit={onSubmit}
+          className="grow bg-white shadow-md rounded px-8 py-6"
+        >
+          <h1 className="font-bold text-xl mb-3">{t("signUp")}</h1>
 
-            <div className="mb-4">
-              <Input
-                id="username"
-                label={t("username")}
-                onChange={onChangeInputValue}
-                errorMessage={errors.username}
-              />
+          <div className="mb-4">
+            <Input
+              id="username"
+              label={t("username")}
+              onChange={onChangeInputValue}
+              errorMessage={errors.username}
+            />
 
-              <Input
-                type="email"
-                id="email"
-                label={t("email")}
-                onChange={onChangeInputValue}
-                errorMessage={errors.email}
-              />
+            <Input
+              type="email"
+              id="email"
+              label={t("email")}
+              onChange={onChangeInputValue}
+              errorMessage={errors.email}
+            />
 
-              <Input
-                type="password"
-                id="password"
-                label={t("password")}
-                onChange={onChangeInputValue}
-                errorMessage={errors.password}
-              />
+            <Input
+              type="password"
+              id="password"
+              label={t("password")}
+              onChange={onChangeInputValue}
+              errorMessage={errors.password}
+            />
 
-              <Input
-                type="password"
-                id="passwordRepeat"
-                label={t("passwordRepeat")}
-                onChange={onChangeInputValue}
-                errorMessage={passwordMissmatch}
-              />
+            <Input
+              type="password"
+              id="passwordRepeat"
+              label={t("passwordRepeat")}
+              onChange={onChangeInputValue}
+              errorMessage={passwordMissmatch}
+            />
 
-              <button
-                className={
-                  disableButton || loading
-                    ? "disabled:opacity-75 hover:opacity-75 button"
-                    : "button"
-                }
-                disabled={disableButton || loading}
-                type="submit"
-              >
-                {loading && (
-                  <ProgressIndicator />
-                )}
-                {t("signUp")}
-              </button>
-            </div>
-          </form>
-        )}
+            <ButtonWithProgress
+              title={t("signUp")}
+              disabled={disableButton || loading}
+              loading={loading}
+            />
+          </div>
+        </form>
+      )}
 
-        {signUpSuccess && (
-          <CustomAlert
-            message="Please check your email to activate your account"
-            type="success"
-          />
-        )}
-      </div>
-    
+      {signUpSuccess && (
+        <CustomAlert
+          message="Please check your email to activate your account"
+          type="success"
+        />
+      )}
+    </div>
   );
 };

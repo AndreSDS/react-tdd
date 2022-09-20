@@ -1,5 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
+import { BrowserRouter } from "react-router-dom";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { LoginPage } from "../src/Pages/LoginPage";
@@ -29,7 +30,10 @@ const setupComponent = (lang: any) => {
     <>
       <LoginPage />
       <LanguageSelector />
-    </>
+    </>,
+    {
+      wrapper: BrowserRouter,
+    }
   );
 
   form = screen.queryByTestId("login-form");
@@ -258,4 +262,4 @@ describe("Login Page", () => {
   });
 });
 
-console.error = () => {}
+console.error = () => {};

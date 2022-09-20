@@ -9,16 +9,15 @@ i18n.init();
 createMockServer();
 
 function App() {
-  const [path, setPath] = useState(window.location.pathname);
-
-  const handlePath = (newPath: string) => {
-    setPath(newPath);
-  };
+  const [auth, setAuth] = useState({
+    isLoggedIn: false,
+    id: "",
+  });
 
   return (
     <div className="App">
-      <Navbar />
-      <Router />
+      <Navbar auth={auth} />
+      <Router onLoginSuccess={setAuth} />
       <LanguageSelector />
     </div>
   );

@@ -6,6 +6,7 @@ import { ProgressIndicator } from "./ProgressIndicator";
 import { UserList } from "./UserList";
 import { PaginationButton } from "./PaginationButton";
 import { UserListItem} from "./UserListItem";
+import { ButtonWithProgress } from "./ButtonWithProgress";
 
 export {
   Input,
@@ -15,5 +16,6 @@ export {
   UserList,
   ProgressIndicator,
   PaginationButton,
-  UserListItem
+  UserListItem,
+  ButtonWithProgress,
 };

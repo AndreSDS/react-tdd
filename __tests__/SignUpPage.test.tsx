@@ -1,6 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUpPage } from "../src/Pages/SignUp";
 import { LanguageSelector } from "../src/components/LanguageSelector";
@@ -323,9 +329,7 @@ describe("SignUp Page", () => {
     });
 
     it("sends accept language header as pt to backend", async () => {
-      setupComponent(en);
-
-      await userEvent.click(togglePortuguese);
+      setupComponent(pt);
 
       await setupMockuser();
 
@@ -333,13 +337,11 @@ describe("SignUp Page", () => {
 
       expect(acceptLanguage).toEqual("pt");
 
-      expect(form).not.toBeInTheDocument();
+      waitForElementToBeRemoved(form);
     });
 
     it("sends accept language header as en to backend", async () => {
-      setupComponent(pt);
-
-      await userEvent.click(toggleEnglish);
+      setupComponent(en);
 
       await setupMockuser();
 
@@ -347,7 +349,7 @@ describe("SignUp Page", () => {
 
       expect(acceptLanguage).toEqual("en");
 
-      expect(form).not.toBeInTheDocument();
+      waitForElementToBeRemoved(form);
     });
   });
 });

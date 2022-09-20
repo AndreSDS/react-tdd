@@ -106,7 +106,13 @@ export function createMockServer() {
         const data: IUser | null = schema.findBy("user", { email, password });
 
         if (data) {
-          return new Response(200);
+          return new Response(
+            200,
+            {},
+            {
+              id: data.id,
+            }
+          );
         } else {
           return new Response(
             401,

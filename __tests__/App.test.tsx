@@ -7,39 +7,56 @@ import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
 
 describe("App", () => {
-  describe("Routing", () => {
-    const setup = async (path: string) => {
-      window.history.pushState({}, "", path);
+  const setup = async (path: string) => {
+    window.history.pushState({}, "", path);
 
-      render(<App />, { wrapper: BrowserRouter });
-    };
+    render(<App />, { wrapper: BrowserRouter });
+  };
 
-    beforeAll(() => {
-      api.post = jest.fn().mockImplementation(async () => {
-        return Promise.resolve();
-      });
-
-      api.get = jest.fn().mockImplementation((url, body) => {
-        let { page, size } = body?.params;
-
-        if (!page) {
-          page = 0;
-        }
-
-        if (!size) {
-          size = 3;
-        }
-
+  beforeAll(() => {
+    api.post = jest.fn().mockImplementation(async (url) => {
+      if (url === "/auth") {
         return Promise.resolve({
           data: {
-            data: getPage(Number(page), Number(size), usersMock),
+            id: "1",
           },
         });
-      });
+      }
+
+      return Promise.resolve();
     });
 
-    afterEach(() => cleanup());
+    api.get = jest.fn().mockImplementation((url, body) => {
+      if (url === '/users/1') {
+        return Promise.resolve({
+          data: {
+            user: usersMock[0]
+          }
+        });
 
+      }
+
+      let { page, size } = body?.params;
+
+      if (!page) {
+        page = 0;
+      }
+
+      if (!size) {
+        size = 3;
+      }
+
+      return Promise.resolve({
+        data: {
+          data: getPage(Number(page), Number(size), usersMock),
+        },
+      });
+    });
+  });
+
+  afterEach(() => cleanup());
+
+  describe("Routing", () => {
     it.each`
       path               | pageTestId
       ${"/"}             | ${"home-page"}
@@ -134,6 +151,77 @@ describe("App", () => {
 
       const page = screen.queryByTestId(/user-page/i);
       expect(page).toBeInTheDocument();
+    });
+  });
+
+  describe("Login", () => {
+    const setupLogin = async () => {
+      setup("/login");
+
+      const emailInput = screen.getByLabelText(/e-mail/i);
+      const passwordInput = screen.getByLabelText(/password/i);
+      const submitButton = screen.getByRole("button", { name: /login/i });
+
+      await userEvent.type(emailInput, "admin@localhost");
+      await userEvent.type(passwordInput, "admin");
+      await userEvent.click(submitButton);
+    };
+
+    it("should redirect to home page when login successfully", async () => {
+      await setupLogin();
+
+      await waitFor(() => {
+        const page = screen.getByTestId("home-page");
+        expect(page).toBeInTheDocument();
+      });
+    });
+
+    it("should hides login and signup links when login successfully", async () => {
+      await setupLogin();
+
+      await waitFor(() => {
+        const loginLink = screen.queryByRole("link", { name: /login/i });
+        const signupLink = screen.queryByRole("link", { name: /signup/i });
+
+        expect(loginLink).not.toBeInTheDocument();
+        expect(signupLink).not.toBeInTheDocument();
+      });
+    });
+
+    it("should display My Profile link when login successfully", async () => {
+      await setup("/login");
+
+      const myProfileLinkBeforeLogin = screen.queryByText("My Profile");
+
+      expect(myProfileLinkBeforeLogin).not.toBeInTheDocument();
+
+      const emailInput = screen.getByLabelText(/e-mail/i);
+      const passwordInput = screen.getByLabelText(/password/i);
+      const submitButton = screen.getByRole("button", { name: /login/i });
+
+      await userEvent.type(emailInput, "admin@localhost");
+      await userEvent.type(passwordInput, "admin");
+      await userEvent.click(submitButton);
+
+      await waitFor(() => {
+        const myProfileLinkAfterLogin = screen.getByText("My Profile");
+        expect(myProfileLinkAfterLogin).toBeInTheDocument();
+      });
+    });
+
+    it("should displays user page when click on My Profile link", async () => {
+      await setupLogin();
+
+      const myProfileLink = screen.getByText("My Profile");
+
+      await userEvent.click(myProfileLink);
+
+      await waitFor(() => {
+        const userPage = screen.getByTestId("user-page");
+        const userName = screen.getByText("admin");
+        expect(userPage).toBeInTheDocument();
+        expect(userName).toBeInTheDocument();
+      });
     });
   });
 });
