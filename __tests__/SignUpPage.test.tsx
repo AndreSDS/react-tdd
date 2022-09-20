@@ -1,44 +1,14 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import {
-  cleanup,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignUpPage } from "../src/Pages/SignUp";
 import { LanguageSelector } from "../src/components/LanguageSelector";
 import { api } from "../src/service/api";
 import { IUser } from "../src/interfaces/user";
-import i18n from "../src/locale/i18n";
 
-jest.mock("../src/service/api");
-jest.mock("react-i18next", () => ({
-  useTranslation: () => {
-    return {
-      t: (str: string) => str,
-      i18n: {
-        changeLanguage: jest.fn(),
-        language: i18n.language,
-      },
-    };
-  },
-  initReactI18next: {
-    type: "3rdParty",
-    init: jest.fn(),
-  },
-}));
-
-const i18nMocks = {
-  signUp: "signUp",
-  username: "username",
-  email: "email",
-  password: "password",
-  passwordRepeat: "passwordRepeat",
-  passwordMissmatch: "passwordMissmatch",
-};
+import en from "../src/locale/en.json";
+import pt from "../src/locale/pt-BR.json";
 
 let form: any,
   header: any,
@@ -50,13 +20,13 @@ let form: any,
   togglePortuguese: any,
   toggleEnglish: any,
   validationMessage: any,
-  acceptLanguage = i18n.language,
+  acceptLanguage: any,
   counter = 0,
   mockReqBody: any;
 
 const message = "Please check your email to activate your account";
 
-const setupComponent = () => {
+const setupComponent = (lang: any) => {
   render(
     <>
       <SignUpPage />
@@ -65,23 +35,39 @@ const setupComponent = () => {
   );
 
   form = screen.queryByTestId("sign-up-form");
-  header = screen.getByRole("heading", { name: i18nMocks.signUp });
-  usernameLabel = screen.queryByLabelText(i18nMocks.username);
-  emailLabel = screen.queryByLabelText(i18nMocks.email);
-  passwordLabel = screen.queryByLabelText(i18nMocks.password);
-  passwordRepeatLabel = screen.queryByLabelText(i18nMocks.passwordRepeat);
-  submitButtonIntl = screen.queryByRole("button", { name: i18nMocks.signUp });
+  header = screen.getByRole("heading", { name: lang.signUp });
+  usernameLabel = screen.queryByLabelText(lang.username);
+  emailLabel = screen.queryByLabelText(lang.email);
+  passwordLabel = screen.queryByLabelText(lang.password);
+  passwordRepeatLabel = screen.queryByLabelText(lang.passwordRepeat);
+  submitButtonIntl = screen.queryByRole("button", { name: lang.signUp });
   togglePortuguese = screen.getByTitle("Portuguese");
   toggleEnglish = screen.getByTitle("English");
 };
 
 describe("SignUp Page", () => {
+  const setupMockuser = async () => {
+    const mockUserObject: IUser = {
+      id: "1",
+      username: "test",
+      email: "test@gmail.com",
+      password: "123456",
+    };
+
+    await userEvent.type(usernameLabel, mockUserObject.username);
+    await userEvent.type(emailLabel, mockUserObject.email);
+    await userEvent.type(passwordLabel, mockUserObject.password);
+    await userEvent.type(passwordRepeatLabel, mockUserObject.password);
+  };
+
   beforeAll(() => {
     api.post = jest
       .fn()
       .mockImplementation(async (url: string, body: any, config) => {
         counter += 1;
         mockReqBody = await body;
+        acceptLanguage = config.headers["Accept-Language"];
+
         return Promise.resolve({ data: body });
       });
 
@@ -90,12 +76,15 @@ describe("SignUp Page", () => {
     });
   });
 
-  beforeEach(() => {
-    setupComponent();
-  });
-  afterEach(cleanup);
+  afterEach(() => cleanup());
 
   describe("Layout", () => {
+    beforeEach(() => {
+      setupComponent(en);
+    });
+
+    afterEach(() => cleanup());
+
     it("should have header", async () => {
       expect(header).toBeInTheDocument();
     });
@@ -138,24 +127,16 @@ describe("SignUp Page", () => {
   });
 
   describe("Behavior", () => {
-    const setupMockuser = async () => {
-      const mockUserObject: IUser = {
-        id: '1',
-        username: "test",
-        email: "test@gmail.com",
-        password: "123456",
-      };
-
-      await userEvent.type(usernameLabel, mockUserObject.username);
-      await userEvent.type(emailLabel, mockUserObject.email);
-      await userEvent.type(passwordLabel, mockUserObject.password);
-      await userEvent.type(passwordRepeatLabel, mockUserObject.password);
-    };
+    beforeEach(() => {
+      setupComponent(en);
+    });
 
     beforeEach(async () => {
       counter = 0;
       await setupMockuser();
     });
+
+    afterEach(() => cleanup());
 
     it("should have enabled the button when inputs password and password-repeat have same value", async () => {
       expect(submitButtonIntl).toBeEnabled();
@@ -244,10 +225,10 @@ describe("SignUp Page", () => {
     };
 
     it.each`
-      field                 | message
-      ${i18nMocks.username} | ${"Username is required"}
-      ${i18nMocks.email}    | ${"E-mail cannot be null"}
-      ${i18nMocks.password} | ${"Password must be at least 6 characters"}
+      field          | message
+      ${en.username} | ${"Username is required"}
+      ${en.email}    | ${"E-mail cannot be null"}
+      ${en.password} | ${"Password must be at least 6 characters"}
     `("displays $message for $field", async ({ field, message }) => {
       const input = screen.getByLabelText(field);
       await userEvent.clear(input);
@@ -270,16 +251,16 @@ describe("SignUp Page", () => {
       await userEvent.type(passwordLabel, "123456");
       await userEvent.type(passwordRepeatLabel, "123457");
 
-      validationMessage = screen.getByText(i18nMocks.passwordMissmatch);
+      validationMessage = screen.getByText(en.passwordMissmatch);
 
       expect(validationMessage).toBeInTheDocument();
     });
 
     it.each`
-      field                 | message
-      ${i18nMocks.username} | ${"Username is required"}
-      ${i18nMocks.email}    | ${"E-mail cannot be null"}
-      ${i18nMocks.password} | ${"Password must be at least 6 characters"}
+      field          | message
+      ${en.username} | ${"Username is required"}
+      ${en.email}    | ${"E-mail cannot be null"}
+      ${en.password} | ${"Password must be at least 6 characters"}
     `(
       "clears errors messages after $field is filled",
       async ({ field, message }) => {
@@ -308,6 +289,8 @@ describe("SignUp Page", () => {
   });
 
   describe("Internationlization", () => {
+    afterEach(() => cleanup());
+
     const setupAssertions = () => {
       expect(header).toBeInTheDocument();
       expect(usernameLabel).toBeInTheDocument();
@@ -318,33 +301,55 @@ describe("SignUp Page", () => {
     };
 
     it("displays all texts in English", async () => {
+      setupComponent(en);
+
       setupAssertions();
     });
 
     it("displays all texts in Portuguese after change the language", async () => {
+      setupComponent(en);
+
       await userEvent.click(togglePortuguese);
+
       setupAssertions();
     });
 
     it("displays all texts in English after change back from Portuguese", async () => {
+      setupComponent(pt);
+
       await userEvent.click(toggleEnglish);
 
       setupAssertions();
     });
 
-    it("sends accept language header as en to backend", async () => {
+    it("sends accept language header as pt to backend", async () => {
+      setupComponent(en);
+
+      await userEvent.click(togglePortuguese);
+
+      await setupMockuser();
+
       await userEvent.click(submitButtonIntl);
 
-      waitForElementToBeRemoved(form);
+      expect(acceptLanguage).toEqual("pt");
 
-      expect(acceptLanguage).toEqual("en");
+      expect(form).not.toBeInTheDocument();
     });
 
-    it("sends accept language header as pt to backend", async () => {
-      await userEvent.click(togglePortuguese);
+    it("sends accept language header as en to backend", async () => {
+      setupComponent(pt);
+
+      await userEvent.click(toggleEnglish);
+
+      await setupMockuser();
+
       await userEvent.click(submitButtonIntl);
 
-      waitForElementToBeRemoved(form);
+      expect(acceptLanguage).toEqual("en");
+
+      expect(form).not.toBeInTheDocument();
     });
   });
 });
+
+console.error = () => {};

@@ -109,7 +109,7 @@ export const SignUpPage = (props: any) => {
       : "";
 
   return (
-    <>
+    
       <div
         data-testid="signup-page"
         className="w-full max-w-lg mx-auto flex flex-col"
@@ -157,7 +157,7 @@ export const SignUpPage = (props: any) => {
               <button
                 className={
                   disableButton || loading
-                    ? "disabled:opacity-75 button"
+                    ? "disabled:opacity-75 hover:opacity-75 button"
                     : "button"
                 }
                 disabled={disableButton || loading}
@@ -179,6 +179,6 @@ export const SignUpPage = (props: any) => {
           />
         )}
       </div>
-    </>
+    
   );
 };
