@@ -10,7 +10,7 @@ export const Router = (props: any) => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/login" element={<LoginPage onLoginSuccess={props.onLoginSuccess} />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/user/:id" element={<UserPage />} />
       <Route path="/activate/:token" element={<ActivationPage />} />
     </Routes>

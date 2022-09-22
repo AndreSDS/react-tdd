@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 export const LanguageSelector = () => {
   const { i18n } = useTranslation();
 
-  function toggleLanguage() {
-    if (i18n.language === "en") {
-      i18n.changeLanguage("pt");
-      return;
-    }
+  function togglePrtuguese() {
+    i18n.changeLanguage("pt");
+  }
+
+  function toggleEnglish() {
     i18n.changeLanguage("en");
   }
 
@@ -18,7 +18,7 @@ export const LanguageSelector = () => {
         title="Portuguese"
         src="https://countryflagsapi.com/png/br"
         alt="Brazil flag"
-        onClick={toggleLanguage}
+        onClick={togglePrtuguese}
       />
 
       <img
@@ -26,7 +26,7 @@ export const LanguageSelector = () => {
         title="English"
         src="https://countryflagsapi.com/png/us"
         alt="The United States Of America flag"
-        onClick={toggleLanguage}
+        onClick={toggleEnglish}
       />
     </div>
   );

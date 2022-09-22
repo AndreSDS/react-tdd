@@ -2,13 +2,11 @@ import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ButtonWithProgress, CustomAlert, Input } from "../../components";
-import { api, loginUser } from "../../service/api";
+import { useAuth } from "../../hooks/useAuth";
+import { loginUser } from "../../service/api";
 
-interface LoginProps {
-  onLoginSuccess: (auth: {}) => void;
-}
-
-export const LoginPage = ({ onLoginSuccess }: LoginProps) => {
+export const LoginPage = () => {
+  const { authLogin } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [formValues, setFormValues] = useState({
@@ -51,11 +49,7 @@ export const LoginPage = ({ onLoginSuccess }: LoginProps) => {
     try {
       const response = await loginUser(body);
       setLoading(false);
-      const auth = {
-        isLoggedIn: true,
-        id: response.data.id,
-      };
-      onLoginSuccess(auth);
+      authLogin(response.data.id);
       navigate("/");
     } catch (error) {
       const errors: any = error;

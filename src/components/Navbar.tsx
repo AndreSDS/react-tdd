@@ -1,16 +1,11 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import brandLogo from "../images/rengar_logo.png";
 
-interface NavBarProps {
-  auth: {
-    isLoggedIn: boolean;
-    id: string;
-  };
-}
+export const Navbar = () => {
+  const {auth} = useAuth();
 
-export const Navbar = ({ auth: { id, isLoggedIn } }: NavBarProps) => {
   const { t } = useTranslation();
 
   return (
@@ -26,7 +21,7 @@ export const Navbar = ({ auth: { id, isLoggedIn } }: NavBarProps) => {
         </Link>
 
         <div className="flex justify-between items-center">
-          {!isLoggedIn && (
+          {!auth.isLoggedIn && (
             <>
               <Link
                 data-testid="signup-link"
@@ -46,9 +41,9 @@ export const Navbar = ({ auth: { id, isLoggedIn } }: NavBarProps) => {
             </>
           )}
 
-          {isLoggedIn && (
-            <Link className="flex items-center ml-3" to={`/user/${id}`}>
-              My Profile
+          {auth.isLoggedIn && (
+            <Link className="flex items-center ml-3" to={`/user/${auth.id}`}>
+              {t("myProfile")}
             </Link>
           )}
         </div>

@@ -9,17 +9,12 @@ i18n.init();
 createMockServer();
 
 function App() {
-  const [auth, setAuth] = useState({
-    isLoggedIn: false,
-    id: "",
-  });
-
   return (
-    <div className="App">
-      <Navbar auth={auth} />
-      <Router onLoginSuccess={setAuth} />
+    <>
+      <Navbar />
+      <Router />
       <LanguageSelector />
-    </div>
+    </>
   );
 }
 
