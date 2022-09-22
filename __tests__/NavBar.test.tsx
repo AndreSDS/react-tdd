@@ -1,13 +1,10 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { render, screen, waitFor } from "../src/test/setup";
 import { Navbar } from "../src/components/Navbar";
 
 describe("Navbar", () => {
   render(
-    <BrowserRouter>
       <Navbar />
-    </BrowserRouter>
   );
 
   it("should render", () => {

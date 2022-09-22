@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "../src/test/setup";
 import { ActivationPage } from "../src/Pages/ActivationPage";
 import { api } from "../src/service/api";
 

@@ -1,10 +1,9 @@
 import React from "react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "../src/test/setup";
 import userEvent from "@testing-library/user-event";
-import { UserList, LanguageSelector } from "../src/components";
+import { UserList } from "../src/components";
 import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
-import { BrowserRouter } from "react-router-dom";
 import en from "../src/locale/en.json";
 import pt from "../src/locale/pt-BR.json";
 
@@ -32,7 +31,7 @@ describe("UserList", () => {
 
     beforeEach(() => {
       setup();
-      render(<UserList />, { wrapper: BrowserRouter });
+      render(<UserList />);
     });
 
     afterEach(() => {
@@ -100,14 +99,13 @@ describe("UserList", () => {
 
     it("should displays spinner while loading data", async () => {
       const spinner = screen.getByRole("status");
-      
+
       expect(spinner).toBeInTheDocument();
 
       await screen.findByText(/admin/i);
 
       expect(spinner).not.toBeInTheDocument();
     });
-    
   });
 
   describe("internationlization", () => {
@@ -122,12 +120,7 @@ describe("UserList", () => {
     beforeEach(async () => {
       setup();
 
-      render(
-        <BrowserRouter>
-          <UserList />
-          <LanguageSelector />
-        </BrowserRouter>
-      );
+      render(<UserList />);
     });
 
     afterEach(() => {
@@ -163,7 +156,6 @@ describe("UserList", () => {
       expect(header).toHaveTextContent(en.users);
       expect(previousPageLink).toHaveTextContent(en.previousPage);
       expect(nextPageLink).toHaveTextContent(en.nextPage);
-
     });
   });
 });

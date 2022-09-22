@@ -1,13 +1,11 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { BrowserRouter } from "react-router-dom";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "../src/test/setup";
 import userEvent from "@testing-library/user-event";
 import { LoginPage } from "../src/Pages/LoginPage";
 import { api } from "../src/service/api";
 import en from "../src/locale/en.json";
 import pt from "../src/locale/pt-BR.json";
-import { LanguageSelector } from "../src/components";
 
 let form: any,
   header: any,
@@ -26,15 +24,7 @@ let form: any,
   } as any;
 
 const setupComponent = (lang: any) => {
-  render(
-    <>
-      <LoginPage />
-      <LanguageSelector />
-    </>,
-    {
-      wrapper: BrowserRouter,
-    }
-  );
+  render(<LoginPage />);
 
   form = screen.queryByTestId("login-form");
   header = screen.getByRole("heading", { name: lang.login });

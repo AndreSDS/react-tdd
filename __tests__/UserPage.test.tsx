@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "../src/test/setup";
 import { usersMock } from "../src/service/usersMock";
 
 import { UserPage } from "../src/Pages/UserPage";

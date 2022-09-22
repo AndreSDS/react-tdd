@@ -1,8 +1,7 @@
 import React from "react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "../src/test/setup";
 import userEvent from "@testing-library/user-event";
 import App from "../src/App";
-import { BrowserRouter } from "react-router-dom";
 import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
 
@@ -10,7 +9,7 @@ describe("App", () => {
   const setup = async (path: string) => {
     window.history.pushState({}, "", path);
 
-    render(<App />, { wrapper: BrowserRouter });
+    render(<App />);
   };
 
   beforeAll(() => {
@@ -27,13 +26,12 @@ describe("App", () => {
     });
 
     api.get = jest.fn().mockImplementation((url, body) => {
-      if (url === '/users/1') {
+      if (url === "/users/1") {
         return Promise.resolve({
           data: {
-            user: usersMock[0]
-          }
+            user: usersMock[0],
+          },
         });
-
       }
 
       let { page, size } = body?.params;

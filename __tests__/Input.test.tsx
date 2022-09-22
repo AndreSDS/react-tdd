@@ -1,5 +1,5 @@
 import React from "react";
-import { getByLabelText, render } from "@testing-library/react";
+import { getByLabelText, render } from "../src/test/setup";
 import { Input } from "../src/components/Input";
 
 describe("Input", () => {
