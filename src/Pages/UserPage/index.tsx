@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { CustomAlert, ProgressIndicator } from "../../components";
 import { ProfileCard } from "../../components/ProfileCard";
+import { useAuth } from "../../hooks/useAuth";
 import { IUser } from "../../interfaces/user";
 import { getUserById } from "../../service/api";
 
-export const UserPage = (props: any) => {
-  const { id } = useParams();
+export const UserPage = () => {
+  const { auth } = useAuth();
   const [user, setUser] = useState<IUser>({} as IUser);
   const [error, setError] = useState<{ message: string }>({ message: "" });
 
   async function getUser() {
     try {
-      const data: any = await getUserById(`${id}`);
+      const data: any = await getUserById(`${auth.id}`);
       setUser(data.data.user);
     } catch (error: any) {
       setError(error.response.data);

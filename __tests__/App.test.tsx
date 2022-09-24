@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import App from "../src/App";
 import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
+import { getItem, setItem } from "../src/utils/storage";
 
 describe("App", () => {
   const setup = async (path: string) => {
@@ -187,19 +188,11 @@ describe("App", () => {
     });
 
     it("should display My Profile link when login successfully", async () => {
-      await setup("/login");
-
       const myProfileLinkBeforeLogin = screen.queryByText("My Profile");
 
       expect(myProfileLinkBeforeLogin).not.toBeInTheDocument();
 
-      const emailInput = screen.getByLabelText(/e-mail/i);
-      const passwordInput = screen.getByLabelText(/password/i);
-      const submitButton = screen.getByRole("button", { name: /login/i });
-
-      await userEvent.type(emailInput, "admin@localhost");
-      await userEvent.type(passwordInput, "admin");
-      await userEvent.click(submitButton);
+      await setup("/login");
 
       await waitFor(() => {
         const myProfileLinkAfterLogin = screen.getByText("My Profile");
@@ -221,6 +214,28 @@ describe("App", () => {
         expect(userName).toBeInTheDocument();
       });
     });
+
+    it("should stores logged state in localStorage when api call succeeds", async () => {
+      await setupLogin();
+
+      await waitFor(() => {
+        screen.findByTestId("home-page");
+      });
+
+      const loggedUser = getItem("auth");
+
+      expect(loggedUser.isLoggedIn).toBeTruthy();
+    });
+
+    it("should displays layout of logged in", async () => {
+      setItem("auth", { isLoggedIn: true });
+
+      setup("/");
+
+      const myProfileLink = screen.getByText("My Profile");
+      expect(myProfileLink).toBeInTheDocument();
+    });
+
   });
 });
 

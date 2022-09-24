@@ -111,6 +111,8 @@ export function createMockServer() {
             {},
             {
               id: data.id,
+              username: data.username,
+              token: `token-${data.id}-${data.username}`,
             }
           );
         } else {

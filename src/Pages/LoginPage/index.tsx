@@ -8,7 +8,7 @@ import { loginUser } from "../../service/api";
 export const LoginPage = () => {
   const { authLogin } = useAuth();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
@@ -49,7 +49,9 @@ export const LoginPage = () => {
     try {
       const response = await loginUser(body);
       setLoading(false);
-      authLogin(response.data.id);
+
+      authLogin(response.data);
+
       navigate("/");
     } catch (error) {
       const errors: any = error;

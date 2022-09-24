@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import brandLogo from "../images/rengar_logo.png";
 
 export const Navbar = () => {
-  const {auth} = useAuth();
+  const { auth } = useAuth();
 
   const { t } = useTranslation();
 
@@ -15,7 +15,7 @@ export const Navbar = () => {
           <img
             data-testid="home-logo"
             className="w-12 h-12 mr-2 rounded-full border-4 border-indigo-200 border-solid shadow-lg"
-            src="https://ih1.redbubble.net/image.1009729670.4646/st,small,507x507-pad,600x600,f8f8f8.jpg"
+            src={brandLogo}
             alt="logo"
           />
         </Link>

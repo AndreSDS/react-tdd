@@ -1,18 +1,9 @@
 import React from "react";
-import "@testing-library/jest-dom";
-import {
-  cleanup,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "../src/test/setup";
+import { cleanup, render, screen, waitFor } from "../src/test/setup";
 import userEvent from "@testing-library/user-event";
 import { SignUpPage } from "../src/Pages/SignUp";
-import { LanguageSelector } from "../src/components/LanguageSelector";
 import { api } from "../src/service/api";
 import { IUser } from "../src/interfaces/user";
-
 import en from "../src/locale/en.json";
 import pt from "../src/locale/pt-BR.json";
 
@@ -63,25 +54,25 @@ const setupMockuser = async () => {
   await userEvent.type(passwordRepeatLabel, mockUserObject.password);
 };
 
+const setupServer = () => {
+  api.post = jest
+    .fn()
+    .mockImplementation(async (url: string, body: any, config) => {
+      counter += 1;
+      mockReqBody = await body;
+      acceptLanguage = config.headers["Accept-Language"];
+      return Promise.resolve({ data: body });
+    });
+
+  api.get = jest.fn().mockResolvedValue({
+    data: [],
+  });
+};
+
 describe("SignUp Page", () => {
   beforeEach(() => {
     setupComponent();
-  });
-
-  beforeAll(() => {
-    api.post = jest
-      .fn()
-      .mockImplementation(async (url: string, body: any, config) => {
-        counter += 1;
-        mockReqBody = await body;
-        acceptLanguage = await config.headers["Accept-Language"];
-
-        return Promise.resolve({ data: body });
-      });
-
-    api.get = jest.fn().mockResolvedValue({
-      data: [],
-    });
+    setupServer();
   });
 
   afterEach(() => cleanup());
@@ -176,8 +167,14 @@ describe("SignUp Page", () => {
 
     it("should display account activation notification after successful sign up request", async () => {
       expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+      expect(emailLabel).toHaveValue("test@gmail.com");
+
       await userEvent.click(submitButtonIntl);
-      expect(screen.queryByText(message)).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.queryByText(message)).toBeInTheDocument();
+      });
     });
 
     it("should hide spinner and enable button after successful sign up request", async () => {
@@ -321,32 +318,31 @@ describe("SignUp Page", () => {
     });
 
     it("sends accept language header as pt to backend", async () => {
-      expect(header).toHaveTextContent(en.signUp);
       await userEvent.click(togglePortuguese);
 
       setupQueries(pt);
-
-      expect(header).toHaveTextContent(pt.signUp);
 
       await setupMockuser();
 
       await userEvent.click(submitButtonIntl);
 
-      console.log("clicou");
-
-      // expect(acceptLanguage).toEqual("pt");
+      waitFor(() => {
+        expect(acceptLanguage).toEqual("pt");
+      });
     });
 
     it("sends accept language header as en to backend", async () => {
       await userEvent.click(toggleEnglish);
 
-      // setupQueries(en);
+      setupQueries(en);
 
-      // await setupMockuser();
+      await setupMockuser();
 
-      // await userEvent.click(submitButtonIntl);
+      await userEvent.click(submitButtonIntl);
 
-      // expect(acceptLanguage).toEqual("en");
+      waitFor(() => {
+        expect(acceptLanguage).toEqual("en");
+      });
     });
   });
 });
