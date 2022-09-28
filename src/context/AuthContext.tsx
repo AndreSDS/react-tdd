@@ -1,5 +1,5 @@
 import create from "zustand";
-import { setItem } from "../utils/storage";
+import { clearStorage, setItem } from "../utils/storage";
 
 export interface AuthData {
   isLoggedIn: boolean;
@@ -11,6 +11,7 @@ export interface AuthData {
 interface AuthContextData {
   auth: AuthData;
   authLogin: (data: any) => void;
+  authLogout: () => void;
 }
 
 export const AuthContext = create<AuthContextData>((set) => ({
@@ -25,5 +26,9 @@ export const AuthContext = create<AuthContextData>((set) => ({
       header: `Bearer ${data.token}`,
     });
     set({ auth: { ...data, isLoggedIn: true } });
+  },
+  authLogout: () => {
+    clearStorage();
+    set({ auth: { isLoggedIn: false, id: "", username: "", token: "" } });
   },
 }));

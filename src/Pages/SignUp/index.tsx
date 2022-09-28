@@ -84,11 +84,7 @@ export const SignUpPage = (props: any) => {
 
     try {
       if (!passwordMissmatch) {
-        await api.post("/users", body, {
-          headers: {
-            "Accept-Language": i18n.language,
-          },
-        });
+        await api.post("/users", body);
 
         setSignUpSuccess(true);
         setErrors({});

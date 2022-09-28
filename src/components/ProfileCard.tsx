@@ -4,12 +4,14 @@ import { IUser } from "../interfaces/user";
 import { getItem } from "../utils/storage";
 import { Input, ButtonWithProgress } from "../components";
 import { updateUser } from "../service/api";
+import { useTranslation } from "react-i18next";
 
 interface ProfileCardProps {
   user: IUser;
 }
 
 export const ProfileCard = ({ user }: ProfileCardProps) => {
+  const { t } = useTranslation();
   const { id, username } = user;
   // const authUser = JSON.parse(getItem("auth")) || {};
   const { auth, authLogin } = useAuth();
@@ -59,7 +61,7 @@ export const ProfileCard = ({ user }: ProfileCardProps) => {
             type="button"
             className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
           >
-            Edit
+            {t("edit")}
           </button>
         )}
 
@@ -77,7 +79,7 @@ export const ProfileCard = ({ user }: ProfileCardProps) => {
               <ButtonWithProgress
                 disabled={loading}
                 loading={loading}
-                title="Save"
+                title={t("save")}
                 handleClick={updateName}
               />
 
@@ -91,7 +93,7 @@ export const ProfileCard = ({ user }: ProfileCardProps) => {
                 font-bold rounded-lg py-2 px-4 dark:bg-red-600 
                 dark:hover:bg-red-700 dark:focus:ring-red-900"
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </div>

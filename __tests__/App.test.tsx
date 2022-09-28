@@ -1,5 +1,11 @@
 import React from "react";
-import { cleanup, findByRole, render, screen, waitFor } from "../src/test/setup";
+import {
+  cleanup,
+  findByRole,
+  render,
+  screen,
+  waitFor,
+} from "../src/test/setup";
 import userEvent from "@testing-library/user-event";
 import App from "../src/App";
 import { api } from "../src/service/api";
@@ -13,6 +19,27 @@ describe("App", () => {
     render(<App />);
   };
 
+  const setupLogin = async () => {
+    await setup("/login");
+
+    const emailInput: any = screen.queryByLabelText(/e-mail/i);
+    const passwordInput: any = screen.queryByLabelText(/password/i);
+    const submitButton: any = screen.queryByRole("button", {
+      name: /login/i,
+    });
+
+    await userEvent.type(emailInput, `${usersMock[0].email}`);
+    await userEvent.type(passwordInput, `${usersMock[0].password}`);
+    await userEvent.click(submitButton);
+
+    const logoutLink = screen.getByText("Logout");
+
+    return { logoutLink };
+  };
+
+  let logoutCount = 0;
+  let headerAuthorization = "";
+
   beforeAll(() => {
     api.post = jest.fn().mockImplementation(async (url) => {
       if (url === "/auth") {
@@ -25,11 +52,20 @@ describe("App", () => {
         });
       }
 
+      if (url === "/logout") {
+        logoutCount += 1;
+        return Promise.resolve();
+      }
+
       return Promise.resolve();
     });
 
-    api.get = jest.fn().mockImplementation((url, body) => {
+    api.get = jest.fn().mockImplementation((url, body, config) => {
       if (url === "/users/1") {
+        if (config) {
+          headerAuthorization = config.headers["Authorization"];
+        }
+
         return Promise.resolve({
           data: {
             user: usersMock[0],
@@ -55,7 +91,10 @@ describe("App", () => {
     });
   });
 
-  afterEach(() => cleanup());
+  afterEach(() => {
+    logoutCount = 0;
+    cleanup();
+  });
 
   describe("Routing", () => {
     it.each`
@@ -165,20 +204,6 @@ describe("App", () => {
   });
 
   describe("Login", () => {
-    const setupLogin = async () => {
-      await setup("/login");
-
-      const emailInput: any = screen.queryByLabelText(/e-mail/i);
-      const passwordInput: any = screen.queryByLabelText(/password/i);
-      const submitButton: any = screen.queryByRole("button", {
-        name: /login/i,
-      });
-
-      await userEvent.type(emailInput, `${usersMock[0].email}`);
-      await userEvent.type(passwordInput, `${usersMock[0].password}`);
-      await userEvent.click(submitButton);
-    };
-
     it("should redirect to home page when login successfully", async () => {
       await setupLogin();
 
@@ -261,8 +286,54 @@ describe("App", () => {
       const myProfileLink = screen.getByText("My Profile");
       await userEvent.click(myProfileLink);
 
-      const userLoggedIn = await screen.findByRole("heading", { name: /admin/i });
+      const userLoggedIn = await screen.findByRole("heading", {
+        name: /admin/i,
+      });
       expect(userLoggedIn).toBeInTheDocument();
+    });
+  });
+
+  describe("Logout", () => {
+    it("sould displays Logout link when logged in", async () => {
+      const { logoutLink } = await setupLogin();
+
+      expect(logoutLink).toBeInTheDocument();
+    });
+
+    it("should displays login when click on Logout link", async () => {
+      const { logoutLink } = await setupLogin();
+
+      await userEvent.click(logoutLink);
+
+      const loginLink = screen.getByText(/login/i);
+      expect(loginLink).toBeInTheDocument();
+    });
+
+    it("should logout request when click on Logout link", async () => {
+      const { logoutLink } = await setupLogin();
+
+      await userEvent.click(logoutLink);
+
+      await screen.findByText(/login/i);
+
+      expect(logoutCount).toBe(1);
+    });
+
+    it("should removes authorization header from request when user logs out", async () => {
+      const { logoutLink } = await setupLogin();
+
+      await userEvent.click(logoutLink);
+
+      const userInList = await screen.findByText(/admin/i);
+
+      await userEvent.click(userInList);
+
+      const headerUser = await screen.findByRole("heading", {
+        name: /admin/i,
+      });
+
+      expect(headerUser).toBeInTheDocument();
+      expect(headerAuthorization).toBeFalsy();
     });
   });
 });

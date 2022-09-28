@@ -9,7 +9,6 @@ const setItem = (key: string, value: any) => {
 
 const getItem = (key: string) => {
   const value = secureLs.get(key);
-
   return value;
 };
 

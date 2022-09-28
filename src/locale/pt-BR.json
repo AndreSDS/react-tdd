@@ -7,9 +7,13 @@
   "passwordMissmatch": "As senhas não conferem",
   "home": "Início",
   "login": "Entrar",
+  "logout": "Sair",
   "nextPage": "próxima",
   "previousPage": "anterior",
   "users": "Usuários",
   "user": "Usuário",
-  "myProfile": "Meu perfil"
+  "myProfile": "Meu perfil",
+  "edit": "Editar",
+  "cancel": "Cancelar",
+  "save": "Salvar"
 }

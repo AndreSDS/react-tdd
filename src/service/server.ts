@@ -1,5 +1,6 @@
 import { createServer, Model, Response, Factory, Request } from "miragejs";
 import { IUser } from "../interfaces/user";
+import { getItem } from "../utils/storage";
 import { getPage } from "./usersMock";
 
 export function createMockServer() {
@@ -33,6 +34,9 @@ export function createMockServer() {
       this.namespace = "api";
 
       this.get("/users", (schema, request: Request) => {
+        request.requestHeaders.Authorization = JSON.parse(
+          getItem("auth")
+        ).header;
         const { page, size }: any = request?.queryParams;
 
         const data = this.schema.all("user");
@@ -48,6 +52,9 @@ export function createMockServer() {
       });
 
       this.get("/users/:id", (schema, request) => {
+        request.requestHeaders.Authorization = JSON.parse(
+          getItem("auth")
+        ).header;
         const { id } = request.params;
         const data: IUser | null = schema.findBy("user", { id });
 
@@ -65,6 +72,9 @@ export function createMockServer() {
       });
 
       this.post("/users", (schema, request) => {
+        request.requestHeaders.Authorization = JSON.parse(
+          getItem("auth")
+        ).header;
         let data = JSON.parse(request.requestBody) || {};
         const { username, email, password } = data;
 
@@ -87,6 +97,9 @@ export function createMockServer() {
       });
 
       this.post("/users/token/:token", (schema, request) => {
+        request.requestHeaders.Authorization = JSON.parse(
+          getItem("auth")
+        ).header;
         const { token } = request.params;
         if (token) {
           return new Response(200);
@@ -102,6 +115,7 @@ export function createMockServer() {
       });
 
       this.post("/auth", (schema, request) => {
+       
         const { email, password } = JSON.parse(request.requestBody);
         const data: IUser | null = schema.findBy("user", { email, password });
 
@@ -126,7 +140,14 @@ export function createMockServer() {
         }
       });
 
+      this.post("/logout", (schema, request) => {
+        return new Response(200);
+      });
+
       this.put("/users/:id", (schema, request) => {
+        request.requestHeaders.Authorization = JSON.parse(
+          getItem("auth")
+        ).header;
         const { id } = request.params;
         const { username } = JSON.parse(request.requestBody);
 

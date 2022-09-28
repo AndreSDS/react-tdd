@@ -6,12 +6,15 @@ import { api } from "../src/service/api";
 import { usersMock, getPage } from "../src/service/usersMock";
 import en from "../src/locale/en.json";
 import pt from "../src/locale/pt-BR.json";
+import { setItem, getItem } from "../src/utils/storage";
+
+let header: string;
 
 describe("UserList", () => {
   describe("interactions", () => {
     const setup = () => {
-      api.get = jest.fn().mockImplementation((url, body) => {
-        let { page, size } = body.params;
+      api.get = jest.fn().mockImplementation(async (url, body, config) => {
+        let { page, size } = await body.params;
 
         if (Number.isNaN(page)) {
           page = 0;
@@ -28,10 +31,11 @@ describe("UserList", () => {
         });
       });
     };
-
+    let rerenderList: any;
     beforeEach(() => {
       setup();
-      render(<UserList />);
+      const { rerender } = render(<UserList />);
+      rerenderList = rerender;
     });
 
     afterEach(() => {
@@ -106,6 +110,21 @@ describe("UserList", () => {
 
       expect(spinner).not.toBeInTheDocument();
     });
+
+    it("should sends request with  authoization header", async () => {
+      setItem("auth", {
+        ...usersMock[0],
+        isLoggedIn: true,
+        header: "auth header value",
+      });
+
+      rerenderList(<UserList />);     
+
+      const data = JSON.parse(getItem("auth"));
+      header = data.header;
+
+      expect(header).toBe("auth header value");
+    });
   });
 
   describe("internationlization", () => {
@@ -159,3 +178,5 @@ describe("UserList", () => {
     });
   });
 });
+
+console.error = () => {};

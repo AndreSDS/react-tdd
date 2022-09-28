@@ -7,9 +7,13 @@
   "passwordMissmatch": "Passwords do not match",
   "home": "Home",
   "login": "Login",
+  "logout": "Logout",
   "nextPage": "next",
   "previousPage": "previous",
   "users": "Users",
   "user": "User",
-  "myProfile": "My Profile"
+  "myProfile": "My Profile",
+  "edit": "Edit",
+  "cancel": "Cancel",
+  "save": "Save"
 }
