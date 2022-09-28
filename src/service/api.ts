@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IUser } from "../interfaces/user";
 import i18n from "../locale/i18n";
+import { getItem } from "../utils/storage";
 
 export const api = axios.create({
   baseURL: "http://127.0.0.1:5173/api",
@@ -32,5 +33,15 @@ export const loginUser = async (body: { email: string; password: string }) => {
     },
   });
 
+  return data;
+};
+
+export const updateUser = async (id: string, body: any) => {
+  const { header } = getItem("auth");
+  const data = await api.put(`/users/${id}`, body, {
+    headers: {
+      Authorization: header,
+    },
+  });
   return data;
 };

@@ -65,7 +65,7 @@ export function createMockServer() {
       });
 
       this.post("/users", (schema, request) => {
-        let data = JSON.parse(request.requestBody);
+        let data = JSON.parse(request.requestBody) || {};
         const { username, email, password } = data;
 
         if (username && email && password && password.length > 5) {
@@ -124,6 +124,15 @@ export function createMockServer() {
             }
           );
         }
+      });
+
+      this.put("/users/:id", (schema, request) => {
+        const { id } = request.params;
+        const { username } = JSON.parse(request.requestBody);
+
+        schema.db.users.update(id, { username });
+
+        return new Response(200);
       });
     },
   });

@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, render, screen, waitFor } from "../src/test/setup";
+import { cleanup, findByRole, render, screen, waitFor } from "../src/test/setup";
 import userEvent from "@testing-library/user-event";
 import App from "../src/App";
 import { api } from "../src/service/api";
@@ -18,7 +18,9 @@ describe("App", () => {
       if (url === "/auth") {
         return Promise.resolve({
           data: {
-            id: "1",
+            id: usersMock[0].id,
+            username: usersMock[0].username,
+            token: `token-${usersMock[0].id}-${usersMock[0].username}`,
           },
         });
       }
@@ -68,7 +70,9 @@ describe("App", () => {
       async ({ path, pageTestId }) => {
         await setup(path);
 
-        expect(screen.queryByTestId(pageTestId)).toBeInTheDocument();
+        waitFor(() => {
+          expect(screen.queryByTestId(pageTestId)).toBeInTheDocument();
+        });
       }
     );
 
@@ -91,7 +95,9 @@ describe("App", () => {
       async ({ path, pageTestId }) => {
         await setup(path);
 
-        expect(screen.queryByTestId(pageTestId)).not.toBeInTheDocument();
+        waitFor(() => {
+          expect(screen.queryByTestId(pageTestId)).not.toBeInTheDocument();
+        });
       }
     );
 
@@ -144,34 +150,41 @@ describe("App", () => {
 
     it("should navigates to user page when click on user name", async () => {
       await setup("/");
+
       let userName = await screen.findByText(/admin/i);
 
       await userEvent.click(userName);
 
-      const page = screen.queryByTestId(/user-page/i);
-      expect(page).toBeInTheDocument();
+      window.history.pushState({}, "", "/users/1");
+
+      waitFor(() => {
+        const page = screen.queryByTestId(/user-page/i);
+        expect(page).toBeInTheDocument();
+      });
     });
   });
 
   describe("Login", () => {
     const setupLogin = async () => {
-      setup("/login");
+      await setup("/login");
 
-      const emailInput = screen.getByLabelText(/e-mail/i);
-      const passwordInput = screen.getByLabelText(/password/i);
-      const submitButton = screen.getByRole("button", { name: /login/i });
+      const emailInput: any = screen.queryByLabelText(/e-mail/i);
+      const passwordInput: any = screen.queryByLabelText(/password/i);
+      const submitButton: any = screen.queryByRole("button", {
+        name: /login/i,
+      });
 
-      await userEvent.type(emailInput, "admin@localhost");
-      await userEvent.type(passwordInput, "admin");
+      await userEvent.type(emailInput, `${usersMock[0].email}`);
+      await userEvent.type(passwordInput, `${usersMock[0].password}`);
       await userEvent.click(submitButton);
     };
 
     it("should redirect to home page when login successfully", async () => {
       await setupLogin();
 
-      await waitFor(() => {
-        const page = screen.getByTestId("home-page");
-        expect(page).toBeInTheDocument();
+      waitFor(() => {
+        const homePage = screen.getByTestId("home-page");
+        expect(homePage).toBeInTheDocument();
       });
     });
 
@@ -218,11 +231,12 @@ describe("App", () => {
     it("should stores logged state in localStorage when api call succeeds", async () => {
       await setupLogin();
 
-      await waitFor(() => {
-        screen.findByTestId("home-page");
+      waitFor(() => {
+        const homePage = screen.getByTestId("home-page");
+        expect(homePage).toBeInTheDocument();
       });
 
-      const loggedUser = getItem("auth");
+      const loggedUser = JSON.parse(getItem("auth"));
 
       expect(loggedUser.isLoggedIn).toBeTruthy();
     });
@@ -236,6 +250,20 @@ describe("App", () => {
       expect(myProfileLink).toBeInTheDocument();
     });
 
+    it("should refreshes user page from another user to the logged in user clicking My Profile link", async () => {
+      await setupLogin();
+
+      const userNotLoggedIn = await screen.findByText(/user/i);
+      await userEvent.click(userNotLoggedIn);
+
+      await screen.findByRole("heading", { name: /user/i });
+
+      const myProfileLink = screen.getByText("My Profile");
+      await userEvent.click(myProfileLink);
+
+      const userLoggedIn = await screen.findByRole("heading", { name: /admin/i });
+      expect(userLoggedIn).toBeInTheDocument();
+    });
   });
 });
 

@@ -8,7 +8,8 @@ const setItem = (key: string, value: any) => {
 };
 
 const getItem = (key: string) => {
-  const value = JSON.parse(secureLs.get(key));
+  const value = secureLs.get(key);
+
   return value;
 };
 

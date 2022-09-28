@@ -20,8 +20,8 @@ export const AuthContext = create<AuthContextData>((set) => ({
   } as AuthData,
   authLogin: (data: any) => {
     setItem("auth", {
-      isLoggedIn: true,
       ...data,
+      isLoggedIn: true,
       header: `Bearer ${data.token}`,
     });
     set({ auth: { ...data, isLoggedIn: true } });

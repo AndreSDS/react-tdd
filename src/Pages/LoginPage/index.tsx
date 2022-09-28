@@ -49,13 +49,11 @@ export const LoginPage = () => {
     try {
       const response = await loginUser(body);
       setLoading(false);
-
       authLogin(response.data);
-
       navigate("/");
     } catch (error) {
       const errors: any = error;
-      if (errors.response.status === 401) {
+      if (errors.response?.status === 401) {
         setErrorMessage(errors.response.data.message);
       }
       setLoading(false);

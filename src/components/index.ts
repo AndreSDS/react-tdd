@@ -7,6 +7,7 @@ import { UserList } from "./UserList";
 import { PaginationButton } from "./PaginationButton";
 import { UserListItem} from "./UserListItem";
 import { ButtonWithProgress } from "./ButtonWithProgress";
+import { ProfileCard } from "./ProfileCard";
 
 export {
   Input,
@@ -18,4 +19,5 @@ export {
   PaginationButton,
   UserListItem,
   ButtonWithProgress,
+  ProfileCard,
 };

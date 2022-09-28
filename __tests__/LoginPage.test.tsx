@@ -211,7 +211,7 @@ describe("Login Page", () => {
 
       await userEvent.click(loginButton);
 
-      const storadeState = getItem("auth");
+      const storadeState = JSON.parse(getItem("auth"));
 
       expect(storadeState).toEqual({
         header: `Bearer token-${usersMock[0].id}-${usersMock[0].username}`,
@@ -227,7 +227,7 @@ describe("Login Page", () => {
 
       await userEvent.click(loginButton);
 
-      const loggedUser = getItem("auth");
+      const loggedUser = JSON.parse(getItem("auth"));
 
       expect(loggedUser.header).toBe(`Bearer ${loggedUser.token}`);
     });
@@ -251,17 +251,23 @@ describe("Login Page", () => {
     it("should display login in portuguese when portuguese is selected", async () => {
       await userEvent.click(togglePortuguese);
 
-      setupPortugueseAssertions();
+      waitFor(() => {
+        setupPortugueseAssertions();
+      });
     });
 
     it("should display login in english when english is selected", async () => {
       await userEvent.click(toggleEnglish);
 
-      setupEnglishAssertions();
+      waitFor(() => {
+        setupEnglishAssertions();
+      });
     });
 
     it("should display login in english by default", () => {
-      setupEnglishAssertions();
+      waitFor(() => {
+        setupEnglishAssertions();
+      });
     });
 
     it("sends accept language header as en to backend", async () => {
